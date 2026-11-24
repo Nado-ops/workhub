@@ -6,7 +6,6 @@ import AdminLayout from './layouts/AdminLayout'
 import ClientLayout from './layouts/ClientLayout'
 import Login from './pages/Login'
 import ResetPassword from './pages/ResetPassword'
-import ComingSoon from './pages/ComingSoon'
 import Overview from './pages/admin/Overview'
 import Tickets from './pages/admin/Tickets'
 import TicketDetail from './pages/admin/TicketDetail'
@@ -14,6 +13,10 @@ import Clients from './pages/admin/Clients'
 import Team from './pages/admin/Team'
 import Projects from './pages/admin/Projects'
 import Finance from './pages/admin/Finance'
+import Pipeline from './pages/admin/Pipeline'
+import Reports from './pages/admin/Reports'
+import HR from './pages/admin/HR'
+import Study from './pages/admin/Study'
 import ClientDashboard from './pages/client/ClientDashboard'
 import MyTickets from './pages/client/MyTickets'
 import ClientTicket from './pages/client/ClientTicket'
@@ -45,11 +48,11 @@ export default function App() {
             <Route path="tickets/:id" element={<TicketDetail />} />
             <Route path="clients" element={<Clients />} />
             <Route path="projects" element={<Projects />} />
-            <Route path="pipeline" element={<ComingSoon title="CRM pipeline" />} />
-            <Route path="reports" element={<ComingSoon title="Reports" />} />
-            <Route path="hr" element={<ComingSoon title="HR & people" />} />
+            <Route path="pipeline" element={<Pipeline />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="hr" element={<HR />} />
             <Route path="finance" element={<RequireRole roles={['admin']}><Finance /></RequireRole>} />
-            <Route path="study" element={<RequireRole roles={['admin']}><ComingSoon title="Study reminders" /></RequireRole>} />
+            <Route path="study" element={<RequireRole roles={['admin']}><Study /></RequireRole>} />
             <Route path="team" element={<RequireRole roles={['admin']}><Team /></RequireRole>} />
           </Route>
 

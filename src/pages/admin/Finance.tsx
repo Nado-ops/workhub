@@ -190,7 +190,7 @@ function ClaimsTable({ claims, onChange, onError }: { claims: ClaimRow[]; onChan
       <p className="flex flex-wrap gap-x-5 gap-y-1 px-5 pt-4 pb-1 text-sm text-soft">
         <span>To approve: <b className="text-warn">{rand(waiting)}</b></span>
         <span>To pay back: <b className="text-text">{rand(owed)}</b></span>
-        <span className="text-muted">Staff submit claims from My HR (coming next).</span>
+        <span className="text-muted">Staff submit claims from My HR → My claims.</span>
       </p>
       {claims.length === 0 ? <p className="p-5 text-sm text-muted">No claims yet.</p> : (
         <div className="overflow-x-auto">

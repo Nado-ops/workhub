@@ -36,8 +36,8 @@ keep code readable, and add short comments where something isn't obvious.
 - `src/layouts/ClientLayout.tsx` — client portal header
 - `src/pages/admin/*`, `src/pages/client/*` — screens
 - `src/auth/*` — session/profile and route guards
-- Built: Overview, Tickets, Ticket detail, Clients, Team, Projects, Finance (quotes, invoices, claims approval),
-  client Dashboard, Tickets, Projects, Quotes & invoices.
-- Designed but not built yet: CRM pipeline, Reports, HR (incl. staff claim submission), Study.
-  Build each one against the existing tables in 001.
+- Built: every designed screen. Admin/staff: Overview, Tickets, Ticket detail, Clients, Projects, CRM pipeline,
+  Finance, Reports, Study, HR, Team. Client: Dashboard, Tickets, Projects, Quotes & invoices.
+- Not built yet: file uploads (Supabase Storage for receipts / HR files), email notifications,
+  client monthly reports, PDF downloads.
 - Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`.

@@ -6,3 +6,9 @@ export const BUSINESS = {
   vatNumber: '', // leave empty if you're not VAT-registered
   bankDetails: '[BANK NAME · ACCOUNT NAME · ACCOUNT NUMBER · BRANCH CODE]',
 }
+
+// Leave allowance per year, used for the balances on HR & people.
+// Set these to match your own leave policy.
+export const LEAVE_POLICY = {
+  annualDaysPerYear: 15,
+}

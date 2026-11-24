@@ -22,7 +22,11 @@ and logins. Hosted on **Cloudflare Workers** (static assets).
 | Projects: cards by status, add/edit, phases, budget, extra work | ✅ |
 | Finance: quotes & invoices (builder, preview, send, mark paid, quote → invoice), claims approval | ✅ (admin only) |
 | Client portal: my projects (approve extras), quotes & invoices (accept quotes) | ✅ |
-| CRM pipeline, Reports, HR (+ submitting claims), Study | 🔜 designed, coming next |
+| CRM pipeline: deals by stage, move, lost/reopen | ✅ |
+| HR: people, leave (request/approve, who's out), timesheets, claims, documents | ✅ (staff see their own) |
+| Reports: tickets, remote support, projects, money (admin) | ✅ |
+| Study reminders (private) | ✅ |
+| File uploads (receipts, HR documents), email notifications, client monthly reports | 🔜 next |
 
 Designs for every screen: the "Work Hub" canvas in Claude.
 
@@ -33,6 +37,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 
 1. `001_work_hub_schema.sql` — tables, roles and security rules
 2. `002_ticket_deadlines.sql` — automatic ticket deadlines from priority
+3. `003_time_entry_delete.sql` — staff can remove their own unapproved time entries
 
 Then make yourself admin:
 
@@ -64,8 +69,8 @@ Cloudflare → **Workers & Pages → Create → Import a repository** → pick t
 so refreshing any page works. Don't add a `public/_redirects` file — Cloudflare rejects it.
 
 ### 4. Your business details
-Edit `src/lib/business.ts` with your business name, contact details and bank details.
-They print on every quote and invoice.
+Edit `src/lib/business.ts` with your business name, contact details and bank details
+(they print on every quote and invoice) and your annual leave allowance.
 
 ## Adding people
 1. Supabase → **Authentication → Users → Invite user** (enter their email).
