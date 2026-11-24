@@ -4,7 +4,7 @@ One place for clients, support tickets, projects, CRM, finance, HR and reports �
 with separate logins for **admin**, **staff** and **clients**.
 
 Built with React + TypeScript (Vite), Tailwind, and **Supabase** for the database
-and logins. Hosted on **Cloudflare Pages**.
+and logins. Hosted on **Cloudflare Workers** (static assets).
 
 ## What works today
 
@@ -19,7 +19,10 @@ and logins. Hosted on **Cloudflare Pages**.
 | Clients: list, add, edit | ✅ |
 | Team & roles: set role and company for each login | ✅ (admin only) |
 | Client portal: dashboard, raise ticket, my tickets, reply | ✅ |
-| Projects, CRM pipeline, Finance, Reports, HR, Study | 🔜 designed, coming next |
+| Projects: cards by status, add/edit, phases, budget, extra work | ✅ |
+| Finance: quotes & invoices (builder, preview, send, mark paid, quote → invoice), claims approval | ✅ (admin only) |
+| Client portal: my projects (approve extras), quotes & invoices (accept quotes) | ✅ |
+| CRM pipeline, Reports, HR (+ submitting claims), Study | 🔜 designed, coming next |
 
 Designs for every screen: the "Work Hub" canvas in Claude.
 
@@ -48,18 +51,21 @@ cp .env.example .env.local   # then paste your Supabase URL and anon key into .e
 npm run dev                  # opens on http://localhost:5173
 ```
 
-### 3. Put it live (Cloudflare Pages)
-Cloudflare → **Workers & Pages → Create → Pages → Connect to Git** → pick this repo.
+### 3. Put it live (Cloudflare Workers)
+Cloudflare → **Workers & Pages → Create → Import a repository** → pick this repo.
 
-- Production branch: `main`
 - Build command: `npm run build`
-- Build output directory: `dist`
-- Environment variables (Production **and** Preview):
+- Deploy command: `npx wrangler deploy` (uses `wrangler.jsonc` in this repo)
+- Build variables:
   - `VITE_SUPABASE_URL` = your Supabase project URL
   - `VITE_SUPABASE_ANON_KEY` = your Supabase anon / public key
-  - `NODE_VERSION` = `22`
 
-`public/_redirects` makes page refreshes work on every route.
+`wrangler.jsonc` tells Cloudflare to serve `dist` and to send every address to the app,
+so refreshing any page works. Don't add a `public/_redirects` file — Cloudflare rejects it.
+
+### 4. Your business details
+Edit `src/lib/business.ts` with your business name, contact details and bank details.
+They print on every quote and invoice.
 
 ## Adding people
 1. Supabase → **Authentication → Users → Invite user** (enter their email).

@@ -1,0 +1,14 @@
+// Cloudflare Workers settings for Work Hub.
+// `npm run build` puts the app in ./dist, and Cloudflare serves it from there.
+// "single-page-application" sends every address (like /app/tickets) to index.html,
+// so refreshing any page works.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "workhub",
+  "compatibility_date": "2026-11-23",
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}

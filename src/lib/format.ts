@@ -69,3 +69,16 @@ export function slaClock(dueAt: string | null, status: TicketStatus) {
 
 export const rand = (n: number) =>
   'R' + n.toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+
+export const PHASES = ['plan', 'design', 'build', 'launch'] as const
+export const PHASE_LABEL: Record<(typeof PHASES)[number], string> = { plan: 'Plan', design: 'Design', build: 'Build', launch: 'Launch' }
+
+export const shortDate = (iso: string | null) =>
+  iso ? new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
+
+/** Today's date as YYYY-MM-DD, in local time (for date inputs and due-date checks). */
+export function todayISO(offsetDays = 0) {
+  const d = new Date()
+  d.setDate(d.getDate() + offsetDays)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}

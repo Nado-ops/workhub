@@ -6,7 +6,7 @@ keep code readable, and add short comments where something isn't obvious.
 ## Stack
 - Vite + React 19 + TypeScript (strict), react-router v7, Tailwind v4 (`src/index.css`)
 - Supabase (database + auth) via `src/lib/supabase.ts` — browser uses the anon key only
-- Cloudflare Pages hosting (`npm run build` → `dist`)
+- Cloudflare Workers hosting with static assets (`wrangler.jsonc`, `npm run build` → `dist`). No `_redirects` file.
 
 ## Rules
 - Work on the `dev` branch. `main` is live.
@@ -36,5 +36,8 @@ keep code readable, and add short comments where something isn't obvious.
 - `src/layouts/ClientLayout.tsx` — client portal header
 - `src/pages/admin/*`, `src/pages/client/*` — screens
 - `src/auth/*` — session/profile and route guards
-- Designed but not built yet: Projects, CRM pipeline, Finance (+claims), Reports, HR, Study,
-  client Projects and Quotes & invoices. Build each one against the existing tables in 001.
+- Built: Overview, Tickets, Ticket detail, Clients, Team, Projects, Finance (quotes, invoices, claims approval),
+  client Dashboard, Tickets, Projects, Quotes & invoices.
+- Designed but not built yet: CRM pipeline, Reports, HR (incl. staff claim submission), Study.
+  Build each one against the existing tables in 001.
+- Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`.

@@ -12,9 +12,13 @@ import Tickets from './pages/admin/Tickets'
 import TicketDetail from './pages/admin/TicketDetail'
 import Clients from './pages/admin/Clients'
 import Team from './pages/admin/Team'
+import Projects from './pages/admin/Projects'
+import Finance from './pages/admin/Finance'
 import ClientDashboard from './pages/client/ClientDashboard'
 import MyTickets from './pages/client/MyTickets'
 import ClientTicket from './pages/client/ClientTicket'
+import ClientProjects from './pages/client/ClientProjects'
+import ClientInvoices from './pages/client/ClientInvoices'
 
 /** Sends each person to the right home page for their role. */
 function Home() {
@@ -40,11 +44,11 @@ export default function App() {
             <Route path="tickets" element={<Tickets />} />
             <Route path="tickets/:id" element={<TicketDetail />} />
             <Route path="clients" element={<Clients />} />
-            <Route path="projects" element={<ComingSoon title="Projects" />} />
+            <Route path="projects" element={<Projects />} />
             <Route path="pipeline" element={<ComingSoon title="CRM pipeline" />} />
             <Route path="reports" element={<ComingSoon title="Reports" />} />
             <Route path="hr" element={<ComingSoon title="HR & people" />} />
-            <Route path="finance" element={<RequireRole roles={['admin']}><ComingSoon title="Finance" /></RequireRole>} />
+            <Route path="finance" element={<RequireRole roles={['admin']}><Finance /></RequireRole>} />
             <Route path="study" element={<RequireRole roles={['admin']}><ComingSoon title="Study reminders" /></RequireRole>} />
             <Route path="team" element={<RequireRole roles={['admin']}><Team /></RequireRole>} />
           </Route>
@@ -54,8 +58,8 @@ export default function App() {
             <Route index element={<ClientDashboard />} />
             <Route path="tickets" element={<MyTickets />} />
             <Route path="tickets/:id" element={<ClientTicket />} />
-            <Route path="projects" element={<ComingSoon title="My projects" />} />
-            <Route path="invoices" element={<ComingSoon title="Quotes & invoices" />} />
+            <Route path="projects" element={<ClientProjects />} />
+            <Route path="invoices" element={<ClientInvoices />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
