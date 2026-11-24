@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+/* Work Hub colours — the same dark teal look as the designs */
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --color-ink: #0A1315;      /* page background */
+  --color-panel: #0F1B1E;    /* cards and sidebar */
+  --color-well: #0A1416;     /* inputs */
+  --color-line: #1C2C2F;     /* borders */
+  --color-line-2: #24383B;   /* input borders */
+  --color-text: #E6EEEE;
+  --color-soft: #C9D6D7;
+  --color-muted: #8FA3A5;
+  --color-accent: #3FD0B5;
+  --color-accent-ink: #062421;
+  --color-danger: #FF9A9A;
+  --color-warn: #F5C46A;
+  --color-info: #9DBBFF;
+}
+
+html, body, #root { min-height: 100%; }
+body {
+  margin: 0;
+  background: radial-gradient(1200px 500px at 50% -10%, #12302F 0%, #0A1315 60%) fixed, #0A1315;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+/* Small shared building blocks, so pages stay short.
+   Each one can still be overridden by a normal class (e.g. "input h-9"). */
+@utility card {
+  @apply bg-panel border border-line rounded-2xl;
+}
+@utility input {
+  @apply h-11 w-full rounded-xl border border-line-2 bg-well px-3 text-sm text-text outline-none focus:border-accent;
+}
+@utility label {
+  @apply flex flex-col gap-1.5 text-xs text-muted;
+}
+@utility btn {
+  @apply inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+}
+@utility btn-primary {
+  @apply inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed bg-accent text-accent-ink;
+}
+@utility btn-ghost {
+  @apply inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-line bg-transparent font-normal text-soft hover:text-text;
+}
+@utility pill {
+  @apply inline-flex w-fit items-center rounded-full px-2.5 py-1 text-xs font-semibold;
+}
+@utility th {
+  @apply px-5 py-3 text-left text-[11px] font-normal tracking-widest text-muted uppercase;
+}
+@utility td {
+  @apply px-5 py-3 border-t border-line text-sm;
+}
