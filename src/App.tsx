@@ -18,6 +18,10 @@ import Reports from './pages/admin/Reports'
 import HR from './pages/admin/HR'
 import Study from './pages/admin/Study'
 import Vendors from './pages/admin/Vendors'
+import MyWork from './pages/admin/MyWork'
+import Tasks from './pages/admin/Tasks'
+import Knowledge from './pages/admin/Knowledge'
+import Announcements from './pages/admin/Announcements'
 import ClientDashboard from './pages/client/ClientDashboard'
 import MyTickets from './pages/client/MyTickets'
 import ClientTicket from './pages/client/ClientTicket'
@@ -45,6 +49,10 @@ export default function App() {
           {/* Admin & staff */}
           <Route path="/app" element={<RequireRole roles={['admin', 'staff']}><AdminLayout /></RequireRole>}>
             <Route index element={<Overview />} />
+            <Route path="my-work" element={<MyWork />} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="knowledge" element={<Knowledge />} />
+            <Route path="announcements" element={<Announcements />} />
             <Route path="tickets" element={<Tickets />} />
             <Route path="tickets/:id" element={<TicketDetail />} />
             <Route path="clients" element={<Clients />} />

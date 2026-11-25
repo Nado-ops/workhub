@@ -50,6 +50,14 @@
   color: var(--color-text);
 }
 
+/* Back to the light look, for pop-ups that open inside the navy menu (e.g. the notification bell). */
+.theme-light {
+  --color-panel: #FFFFFF; --color-raised: #F1F4F8; --color-hover: #EEF2F7;
+  --color-line: #E3E8EF; --color-line-2: #CBD3DE;
+  --color-text: #0B1733; --color-soft: #334155; --color-muted: #5B6577; --color-accent-text: #8A6420;
+  color: var(--color-text);
+}
+
 html, body, #root { min-height: 100%; }
 body {
   margin: 0;
