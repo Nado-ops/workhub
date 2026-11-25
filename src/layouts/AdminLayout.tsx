@@ -18,6 +18,7 @@ const MAIN: Item[] = [
   { to: '/app/tickets', label: 'Support tickets', roles: ['admin', 'staff'] },
   { to: '/app/clients', label: 'Clients', roles: ['admin', 'staff'] },
   { to: '/app/projects', label: 'Projects', roles: ['admin', 'staff'] },
+  { to: '/app/websites', label: 'Websites', roles: ['admin', 'staff'] },
   { to: '/app/pipeline', label: 'CRM pipeline', roles: ['admin', 'staff'] },
   { to: '/app/finance', label: 'Finance', roles: ['admin'] },
   { to: '/app/vendors', label: 'Vendors', roles: ['admin'] },

@@ -48,6 +48,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 7. `007_crm_contacts.sql` — CRM: people (contacts), activity history, lead source, and "won deal → client + draft quote"
 8. `008_internal_work.sql` — internal tasks, knowledge base, announcements and in-app notifications (the bell)
 9. `009_reports_calendar_audit.sql` — business details, monthly client reports (+ email on the 1st), shared calendar, audit log, notification emails
+10. `010_website_cms.sql` — website CMS: client websites, editable fields, changes and requests, `site-images` bucket
 
 Then make yourself admin:
 
@@ -136,3 +137,42 @@ Until step 3, a new login sees a "not set up yet" message and no data.
 - Clients only ever get their own company's data, and never see internal notes.
 - Only the **anon** key goes in the app. The **service_role** key must never be in this repo,
   in Cloudflare's frontend settings, or pasted into chat.
+
+## Website CMS (clients edit their websites from the portal)
+
+How it works: each client website is an HTML site in its own GitHub repo (files in a folder such as `public`),
+deployed by Cloudflare whenever that repo changes. Editable parts of a page carry a `data-cms="name"` marker.
+Work Hub reads those parts, lets the client (or you) change them, and saves the change back to GitHub as a commit.
+Cloudflare then rebuilds the client's site — usually within a minute or two.
+
+WordPress and other sites can be added too; for now their clients send **change requests** (words + photos) that you do yourself.
+
+### One-time setup
+1. **Database:** run `supabase/migrations/010_website_cms.sql` in the Supabase SQL Editor.
+2. **GitHub key** (lets Work Hub save changes to the client website repos):
+   GitHub → your picture → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token.
+   - Resource owner: the account/organisation that owns the client website repos (e.g. `Nado-ops`)
+   - Repository access: **Only select repositories** → pick the client website repos
+   - Permissions → Repository permissions → **Contents: Read and write**
+   - Copy the token. Don't paste it anywhere except the next step.
+3. **Cloudflare secrets:** Workers & Pages → `workhub` → Settings → Variables and secrets → **Add** (type **Secret**) for each:
+   - `GITHUB_TOKEN` — the token from step 2
+   - `SUPABASE_URL` — same value as `VITE_SUPABASE_URL`
+   - `SUPABASE_ANON_KEY` — same value as `VITE_SUPABASE_ANON_KEY`
+4. Merge the pull request. Cloudflare deploys the app and the small server part (`worker/`) together.
+
+### Adding a client website
+1. **Websites → Connect a website:** pick the client, give the live address, the repo (`owner/name`), branch and folder.
+2. **Scan website** — reads every `.html` page.
+3. **Pages → Auto-mark page** for each page the client should edit (e.g. `index.html`, `about/index.html`).
+   It marks headings, paragraphs, photos and buttons (not menus, forms or scripts) and saves that to GitHub.
+   You can also add markers yourself: `<h1 data-cms="hero-title" data-cms-label="Main heading">…</h1>`.
+4. **Rename** fields so the client sees friendly names ("Opening hours" instead of "text-3").
+5. Leave "I review client edits" on (recommended) or switch it off so edits go live immediately.
+
+Photos clients upload are copied into the site at `/images/uploads/…` when published.
+Rich text only keeps simple formatting (bold, italic, lists, links) — scripts and styles are always removed.
+
+### Testing the server part locally (optional)
+Create `.dev.vars` (never commit it) with `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `GITHUB_TOKEN`, run `npm run build`,
+then `npx wrangler dev`. `npm run check:worker` type-checks the server code.
