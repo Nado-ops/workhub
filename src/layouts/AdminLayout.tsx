@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import type { Role } from '../lib/types'
+import NotificationBell from '../components/NotificationBell'
 
 interface Item {
   to: string
@@ -11,6 +12,8 @@ interface Item {
 
 const MAIN: Item[] = [
   { to: '/app', label: 'Overview', roles: ['admin', 'staff'] },
+  { to: '/app/my-work', label: 'My work', roles: ['admin', 'staff'] },
+  { to: '/app/tasks', label: 'Tasks', roles: ['admin', 'staff'] },
   { to: '/app/tickets', label: 'Support tickets', roles: ['admin', 'staff'] },
   { to: '/app/clients', label: 'Clients', roles: ['admin', 'staff'] },
   { to: '/app/projects', label: 'Projects', roles: ['admin', 'staff'] },
@@ -22,6 +25,8 @@ const MAIN: Item[] = [
 ]
 
 const WORKSPACE: Item[] = [
+  { to: '/app/announcements', label: 'Announcements', roles: ['admin', 'staff'] },
+  { to: '/app/knowledge', label: 'Knowledge base', roles: ['admin', 'staff'] },
   { to: '/app/hr', label: 'HR & people', staffLabel: 'My HR', roles: ['admin', 'staff'] },
   { to: '/app/team', label: 'Team & roles', roles: ['admin'] },
 ]
@@ -38,9 +43,12 @@ export default function AdminLayout() {
   return (
     <div className="flex min-h-screen flex-wrap items-start gap-4 p-4 md:p-5">
       <nav aria-label="Main" className="theme-navy card flex w-full flex-col gap-0.5 p-3 md:sticky md:top-5 md:w-60">
-        <NavLink to="/app" end className="mb-3 flex items-center gap-2.5 px-2 pt-1 no-underline text-text">
-          <img src="/logo-wordmark-light.png" alt="Work Hub" className="h-8 w-auto" />
-        </NavLink>
+        <div className="mb-3 flex items-center justify-between gap-2 px-2 pt-1">
+          <NavLink to="/app" end className="no-underline text-text">
+            <img src="/logo-wordmark-light.png" alt="Work Hub" className="h-8 w-auto" />
+          </NavLink>
+          <NotificationBell />
+        </div>
 
         <p className="px-2.5 pt-2 pb-1 text-[11px] tracking-widest text-muted">MAIN</p>
         {visible(MAIN).map((i) => (

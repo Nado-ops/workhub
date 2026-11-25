@@ -48,5 +48,8 @@ keep code readable, and add short comments where something isn't obvious.
 - Vendors (admin only, migration 006): pg_cron runs `email_vendor_renewals()` daily at 06:00 UTC.
 - CRM (migration 007): `contacts` (on a deal and/or client), `deal_activities` (call/email/meeting/note), `deals.source`.
   `convert_deal()` turns a deal into a client and, for admins, a draft quote. Team-only; clients see none of it.
-- Not built yet: client monthly reports, PDF downloads.
-- Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`, `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.
+- Internal work (migration 008, team-only): `tasks`, `kb_articles`, `announcements` (admins post), `notifications`.
+  Notifications are only created by database triggers (`public.notify()`); the browser can read/mark/delete its own.
+  Pages: My work, Tasks, Knowledge base, Announcements; bell = `src/components/NotificationBell.tsx`.
+- Not built yet: client monthly reports, PDF downloads, study reminder emails.
+- Shared helpers: `src/lib/team.ts` (`useTeam`), `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`, `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.
