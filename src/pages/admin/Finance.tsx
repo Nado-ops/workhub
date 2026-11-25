@@ -261,10 +261,9 @@ function DocBuilder({
     if (clean.length === 0) { setError('Add at least one item.'); return }
     setBusy(true)
     setError(null)
-    const docRow = {
-      kind, client_id: clientId, title: title.trim() || clean[0].description.trim(), due_date: dueDate || null, include_vat: vat,
-      ...(send ? { status: 'sent' as const, sent_at: new Date().toISOString() } : {}),
-    }
+    // Save the document and its lines first. Only then mark it "sent", because
+    // that is what emails the client, and the email needs the final total.
+    const docRow = { kind, client_id: clientId, title: title.trim() || clean[0].description.trim(), due_date: dueDate || null, include_vat: vat }
     let id = editing?.id
     if (editing) {
       const { error } = await supabase.from('documents').update(docRow).eq('id', editing.id)
@@ -278,9 +277,13 @@ function DocBuilder({
     const { error } = await supabase.from('document_lines').insert(
       clean.map((l, i) => ({ document_id: id, position: i, description: l.description.trim(), qty: num(l.qty), unit_price: num(l.unit_price) })),
     )
+    if (error) { setBusy(false); setError(error.message); return }
+    if (send) {
+      const { error: sendError } = await supabase.from('documents').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', id!)
+      if (sendError) { setBusy(false); setError(sendError.message); return }
+    }
     setBusy(false)
-    if (error) setError(error.message)
-    else onDone()
+    onDone()
   }
 
   const seg = (on: boolean) => `h-8 cursor-pointer rounded-lg px-3.5 text-sm ${on ? 'bg-[#16282B] font-semibold text-text' : 'text-muted'}`

@@ -40,5 +40,8 @@ keep code readable, and add short comments where something isn't obvious.
   Finance, Reports, Study, HR, Team. Client: Dashboard, Tickets, Projects, Quotes & invoices.
 - File uploads: private Storage buckets `receipts`, `hr-docs`, `ticket-files` (migration 004); use `src/lib/files.ts`
   (`uploadFile`, `openFile` with 60-second signed links) — never make a bucket public.
-- Not built yet: email notifications, client monthly reports, PDF downloads.
-- Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`, `src/lib/files.ts`, `src/components/TicketFiles.tsx`.
+- Emails: database triggers call Resend through pg_net (migration 005). Settings live in Supabase Vault
+  (`resend_api_key`, `email_from`, `app_url`), read with `public.setting()`. Send with `public.send_email()`;
+  every email is logged in `email_log`. Never email clients about internal notes.
+- Not built yet: client monthly reports, PDF downloads.
+- Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`, `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.
