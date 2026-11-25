@@ -61,7 +61,7 @@ keep code readable, and add short comments where something isn't obvious.
   (MonthlyReport). "Download PDF" = `window.print()` → Save as PDF; `PrintBar` is hidden when printing.
 - Calendar (`/app/calendar`) merges events, approved leave, task/project/invoice/renewal dates, CRM follow-ups,
   own study reminders and SA public holidays (`src/lib/holidays.ts`). Activity log (`/app/activity`, admin) has
-  the JSON backup download.
+  the JSON backup download and Clear logs (`admin_clear_logs()`, migration 012 — always leaves a "Logs cleared" entry).
 - Website CMS (migration 010): `sites` (client website; kind github/cloudflare/wordpress/other; admin manages), `site_fields`
   (editable parts found by scanning `data-cms` markers), `site_changes` (edit = new value for a field; request = words +
   photos), private bucket `site-images`. Publishing happens ONLY in the Cloudflare Worker (`worker/`): it calls Supabase
