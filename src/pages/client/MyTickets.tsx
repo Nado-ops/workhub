@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { ACCEPT, uploadFile } from '../../lib/files'
 import { useAuth } from '../../auth/AuthProvider'
 import { CLIENT_STATUS_LABEL, STATUS_STYLE, ticketRef, timeAgo } from '../../lib/format'
 import type { Priority, Ticket } from '../../lib/types'
@@ -17,6 +18,7 @@ export default function MyTickets() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<Priority>('normal')
+  const [files, setFiles] = useState<File[]>([])
   const [busy, setBusy] = useState(false)
   const [sent, setSent] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -36,10 +38,16 @@ export default function MyTickets() {
       .from('tickets')
       .insert({ client_id: profile.client_id, title: title.trim(), description: description.trim() || null, priority, created_by: profile.id })
       .select('id').single()
+    if (error) { setBusy(false); setError(error.message); return }
+    // Attach any screenshots to the new ticket's folder
+    try {
+      for (const f of files) await uploadFile('ticket-files', String(data.id), f)
+    } catch (e) {
+      setError(`Your ticket was sent, but a file didn't upload: ${(e as Error).message}`)
+    }
     setBusy(false)
-    if (error) { setError(error.message); return }
     setSent(ticketRef(data.id))
-    setTitle(''); setDescription(''); setPriority('normal')
+    setTitle(''); setDescription(''); setPriority('normal'); setFiles([])
     load()
   }
 
@@ -82,8 +90,13 @@ export default function MyTickets() {
           <label className="label">Tell us more
             <textarea className="input h-28 py-2" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What happened, on which page, and what you expected to see." />
           </label>
+          <label className="btn h-10 w-fit cursor-pointer border border-dashed border-[#3A5256] font-normal text-soft">
+            + Attach screenshots or PDFs
+            <input type="file" accept={ACCEPT} multiple className="sr-only" onChange={(e) => setFiles(Array.from(e.target.files ?? []))} />
+          </label>
+          {files.length > 0 && <p className="text-xs text-soft">{files.map((f) => f.name).join(', ')}</p>}
           {error && <p className="text-sm text-danger">{error}</p>}
-          <button className="btn-primary h-11 self-end" disabled={busy}>Send ticket</button>
+          <button className="btn-primary h-11 self-end" disabled={busy}>{busy ? 'Sending…' : 'Send ticket'}</button>
         </form>
 
         <section aria-label="Your tickets" className="card min-w-0 flex-[1.4_1_460px] overflow-hidden">

@@ -36,8 +36,9 @@ keep code readable, and add short comments where something isn't obvious.
 - `src/layouts/ClientLayout.tsx` — client portal header
 - `src/pages/admin/*`, `src/pages/client/*` — screens
 - `src/auth/*` — session/profile and route guards
-- Built: Overview, Tickets, Ticket detail, Clients, Team, Projects, Finance (quotes, invoices, claims approval),
-  client Dashboard, Tickets, Projects, Quotes & invoices.
-- Designed but not built yet: CRM pipeline, Reports, HR (incl. staff claim submission), Study.
-  Build each one against the existing tables in 001.
-- Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`.
+- Built: every designed screen. Admin/staff: Overview, Tickets, Ticket detail, Clients, Projects, CRM pipeline,
+  Finance, Reports, Study, HR, Team. Client: Dashboard, Tickets, Projects, Quotes & invoices.
+- File uploads: private Storage buckets `receipts`, `hr-docs`, `ticket-files` (migration 004); use `src/lib/files.ts`
+  (`uploadFile`, `openFile` with 60-second signed links) — never make a bucket public.
+- Not built yet: email notifications, client monthly reports, PDF downloads.
+- Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`, `src/lib/files.ts`, `src/components/TicketFiles.tsx`.

@@ -5,6 +5,7 @@ import { rand, shortDate, todayISO } from '../../lib/format'
 import { BUSINESS } from '../../lib/business'
 import Tabs from '../../components/Tabs'
 import { STATUS_TEXT, STATUS_TONE, docStatus } from '../../lib/finance'
+import { openFile } from '../../lib/files'
 
 type DocRow = Doc & { client: { name: string } | null }
 type ClaimRow = Claim & { person: { full_name: string } | null; client: { name: string } | null }
@@ -190,7 +191,7 @@ function ClaimsTable({ claims, onChange, onError }: { claims: ClaimRow[]; onChan
       <p className="flex flex-wrap gap-x-5 gap-y-1 px-5 pt-4 pb-1 text-sm text-soft">
         <span>To approve: <b className="text-warn">{rand(waiting)}</b></span>
         <span>To pay back: <b className="text-text">{rand(owed)}</b></span>
-        <span className="text-muted">Staff submit claims from My HR (coming next).</span>
+        <span className="text-muted">Staff submit claims from My HR → My claims.</span>
       </p>
       {claims.length === 0 ? <p className="p-5 text-sm text-muted">No claims yet.</p> : (
         <div className="overflow-x-auto">
@@ -200,7 +201,8 @@ function ClaimsTable({ claims, onChange, onError }: { claims: ClaimRow[]; onChan
               {claims.map((c) => (
                 <tr key={c.id}>
                   <td className="td">{c.person?.full_name || '—'}</td>
-                  <td className="td">{c.description}<p className="text-xs text-muted">{c.category} · {shortDate(c.created_at)}</p></td>
+                  <td className="td">{c.description}<p className="text-xs text-muted">{c.category} · {shortDate(c.created_at)}
+                    {c.receipt_path ? <> · <button className="cursor-pointer text-accent" onClick={() => openFile('receipts', c.receipt_path!)}>receipt</button></> : <span className="text-warn"> · no receipt</span>}</p></td>
                   <td className="td text-soft">{c.client?.name ?? 'Internal'}</td>
                   <td className="td font-semibold">{rand(Number(c.amount))}</td>
                   <td className="td"><span className={`pill ${tone[c.status]}`}>● {text[c.status]}</span></td>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import TicketFiles from '../../components/TicketFiles'
 import { useAuth } from '../../auth/AuthProvider'
 import type { Priority, Profile, RemoteSession, Ticket, TicketMessage, TicketStatus } from '../../lib/types'
 import {
@@ -82,6 +83,8 @@ export default function TicketDetail() {
             <p className="text-[11px] tracking-widest text-muted">◷ RESPONSE DEADLINE</p>
             <p className={`mt-1 text-xl ${clock.tone}`}>{clock.text}</p>
           </section>
+
+          <section aria-label="Attachments" className="card p-4"><TicketFiles ticketId={ticket.id} /></section>
 
           <RemoteSessionCard
             ticket={ticket}
