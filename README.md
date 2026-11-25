@@ -26,7 +26,8 @@ and logins. Hosted on **Cloudflare Workers** (static assets).
 | HR: people, leave (request/approve, who's out), timesheets, claims, documents | ✅ (staff see their own) |
 | Reports: tickets, remote support, projects, money (admin) | ✅ |
 | Study reminders (private) | ✅ |
-| File uploads (receipts, HR documents), email notifications, client monthly reports | 🔜 next |
+| File uploads: receipt photos, HR document files, ticket screenshots (private, images & PDFs, 10 MB) | ✅ |
+| Email notifications, client monthly reports, PDF downloads | 🔜 next |
 
 Designs for every screen: the "Work Hub" canvas in Claude.
 
@@ -38,6 +39,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 1. `001_work_hub_schema.sql` — tables, roles and security rules
 2. `002_ticket_deadlines.sql` — automatic ticket deadlines from priority
 3. `003_time_entry_delete.sql` — staff can remove their own unapproved time entries
+4. `004_file_uploads.sql` — private file storage for receipts, HR documents and ticket screenshots
 
 Then make yourself admin:
 

@@ -38,6 +38,7 @@ keep code readable, and add short comments where something isn't obvious.
 - `src/auth/*` — session/profile and route guards
 - Built: every designed screen. Admin/staff: Overview, Tickets, Ticket detail, Clients, Projects, CRM pipeline,
   Finance, Reports, Study, HR, Team. Client: Dashboard, Tickets, Projects, Quotes & invoices.
-- Not built yet: file uploads (Supabase Storage for receipts / HR files), email notifications,
-  client monthly reports, PDF downloads.
-- Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`.
+- File uploads: private Storage buckets `receipts`, `hr-docs`, `ticket-files` (migration 004); use `src/lib/files.ts`
+  (`uploadFile`, `openFile` with 60-second signed links) — never make a bucket public.
+- Not built yet: email notifications, client monthly reports, PDF downloads.
+- Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`, `src/lib/files.ts`, `src/components/TicketFiles.tsx`.

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import TicketFiles from '../../components/TicketFiles'
 import { CLIENT_STATUS_LABEL, STATUS_STYLE, ticketRef, timeAgo } from '../../lib/format'
 import type { Ticket, TicketMessage } from '../../lib/types'
 
@@ -45,6 +46,8 @@ export default function ClientTicket() {
         </div>
         <p className="mt-1 text-sm text-muted">{ticketRef(ticket.id)} · opened {timeAgo(ticket.created_at)}</p>
       </div>
+
+      <section aria-label="Attachments" className="card p-4"><TicketFiles ticketId={ticket.id} /></section>
 
       <section className="card overflow-hidden">
         {ticket.description && <p className="whitespace-pre-line border-b border-line p-5 text-sm">{ticket.description}</p>}

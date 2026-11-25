@@ -5,6 +5,7 @@ import type { Claim, Client, Decision, Profile } from '../../lib/types'
 import { rand, shortDate, todayISO } from '../../lib/format'
 import { LEAVE_POLICY } from '../../lib/business'
 import Tabs from '../../components/Tabs'
+import { ACCEPT, openFile, uploadFile } from '../../lib/files'
 
 type LeaveType = 'annual' | 'sick' | 'family_responsibility' | 'unpaid'
 interface Leave {
@@ -15,7 +16,7 @@ interface TimeEntry {
   id: string; user_id: string; work_date: string; minutes: number; client_id: string | null; note: string | null
   approved: boolean; person?: { full_name: string } | null; client?: { name: string } | null
 }
-interface HrDoc { id: string; user_id: string | null; name: string; status: string; expires_on: string | null; person?: { full_name: string } | null }
+interface HrDoc { id: string; user_id: string | null; name: string; status: string; expires_on: string | null; file_path: string | null; person?: { full_name: string } | null }
 interface Absence { user_id: string; full_name: string; start_date: string; end_date: string }
 
 const LEAVE_LABEL: Record<LeaveType, string> = { annual: 'Annual leave', sick: 'Sick leave', family_responsibility: 'Family responsibility', unpaid: 'Unpaid leave' }
@@ -344,6 +345,9 @@ function TimeTab({ admin, myId }: { admin: boolean; myId?: string }) {
 
 /* ---------- My claims (staff) ---------- */
 function MyClaims() {
+  const { profile } = useAuth()
+  const [receipt, setReceipt] = useState<File | null>(null)
+  const [busy, setBusy] = useState(false)
   const [rows, setRows] = useState<(Claim & { client: { name: string } | null })[]>([])
   const [clients, setClients] = useState<Pick<Client, 'id' | 'name'>[]>([])
   const [description, setDescription] = useState('')
@@ -365,9 +369,18 @@ function MyClaims() {
     e.preventDefault()
     const amt = Number(amount.replace(',', '.'))
     if (!amt) { setError('Enter the amount.'); return }
-    const { error } = await supabase.from('claims').insert({ description: description.trim(), category, amount: amt, client_id: clientId || null })
+    setBusy(true)
+    let receipt_path: string | null = null
+    try {
+      // Receipts go in the person's own folder, so only they and the admin can open them
+      if (receipt && profile) receipt_path = await uploadFile('receipts', profile.id, receipt)
+    } catch (e) {
+      setBusy(false); setError((e as Error).message); return
+    }
+    const { error } = await supabase.from('claims').insert({ description: description.trim(), category, amount: amt, client_id: clientId || null, receipt_path })
+    setBusy(false)
     if (error) { setError(error.message); return }
-    setDescription(''); setAmount(''); setError(null); load()
+    setDescription(''); setAmount(''); setReceipt(null); setError(null); load()
   }
 
   const tone = { waiting: 'bg-[#3A2A10] text-warn', approved: 'bg-[#182640] text-info', paid_back: 'bg-[#123330] text-accent', declined: 'bg-[#16282B] text-muted' }
@@ -392,9 +405,12 @@ function MyClaims() {
             {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </label>
-        <p className="text-xs text-muted">Keep the receipt — uploading photos of receipts comes in a later update.</p>
+        <label className="btn h-10 w-fit cursor-pointer border border-dashed border-[#3A5256] font-normal text-soft">
+          {receipt ? `Receipt: ${receipt.name}` : '+ Add receipt photo or PDF'}
+          <input type="file" accept={ACCEPT} capture="environment" className="sr-only" onChange={(e) => setReceipt(e.target.files?.[0] ?? null)} />
+        </label>
         {error && <p className="text-sm text-danger">{error}</p>}
-        <button className="btn-primary self-end">Submit claim</button>
+        <button className="btn-primary self-end" disabled={busy}>{busy ? 'Sending…' : 'Submit claim'}</button>
       </form>
 
       <div className="min-w-0 flex-[1.3_1_400px]">
@@ -406,6 +422,7 @@ function MyClaims() {
               <p className="text-sm font-medium">{c.description}</p>
               <p className="text-xs text-muted">{c.category}{c.client ? ` · for ${c.client.name}` : ''} · {shortDate(c.created_at)}</p>
             </div>
+            {c.receipt_path && <button className="cursor-pointer text-xs text-accent" onClick={() => openFile('receipts', c.receipt_path!)}>Receipt</button>}
             <b className="text-sm">{rand(Number(c.amount))}</b>
             <span className={`pill ${tone[c.status]}`}>{text[c.status]}</span>
           </div>
@@ -423,6 +440,7 @@ function DocsTab({ admin }: { admin: boolean }) {
   const [userId, setUserId] = useState('')
   const [status, setStatus] = useState('Signed')
   const [expires, setExpires] = useState('')
+  const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   async function load() {
@@ -436,9 +454,16 @@ function DocsTab({ admin }: { admin: boolean }) {
 
   async function add(e: FormEvent) {
     e.preventDefault()
-    const { error } = await supabase.from('hr_documents').insert({ name: name.trim(), user_id: userId || null, status, expires_on: expires || null })
+    let file_path: string | null = null
+    try {
+      // Personal files go in that person's folder; policies go in "everyone"
+      if (file) file_path = await uploadFile('hr-docs', userId || 'everyone', file)
+    } catch (e) {
+      setError((e as Error).message); return
+    }
+    const { error } = await supabase.from('hr_documents').insert({ name: name.trim(), user_id: userId || null, status, expires_on: expires || null, file_path })
     if (error) { setError(error.message); return }
-    setName(''); setExpires(''); load()
+    setName(''); setExpires(''); setFile(null); setError(null); load()
   }
   async function remove(id: string) {
     await supabase.from('hr_documents').delete().eq('id', id)
@@ -467,8 +492,12 @@ function DocsTab({ admin }: { admin: boolean }) {
             </select>
           </label>
           <label className="label flex-[1_1_140px]">Expires<input className="input" type="date" value={expires} onChange={(e) => setExpires(e.target.value)} /></label>
+          <label className="btn h-11 cursor-pointer border border-dashed border-[#3A5256] font-normal text-soft">
+            {file ? file.name.slice(0, 24) : '+ Attach file'}
+            <input type="file" accept={ACCEPT} className="sr-only" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+          </label>
           <button className="btn-primary h-11">Add</button>
-          <p className="basis-full text-xs text-muted">This keeps track of paperwork. Uploading the files themselves comes in a later update.</p>
+          <p className="basis-full text-xs text-muted">Personal files can only be opened by that person and admins. "Everyone" files can be opened by all staff.</p>
         </form>
       )}
       {error && <p className="text-sm text-danger">{error}</p>}
@@ -480,6 +509,7 @@ function DocsTab({ admin }: { admin: boolean }) {
               <p className="text-sm font-medium">{d.name}</p>
               <p className="text-xs text-muted">{d.user_id ? d.person?.full_name ?? 'Someone' : 'Everyone'}{d.expires_on ? ` · expires ${shortDate(d.expires_on)}` : ''}</p>
             </div>
+            {d.file_path && <button className="cursor-pointer text-xs text-accent" onClick={() => openFile('hr-docs', d.file_path!)}>Open</button>}
             <span className={`pill ${tone(d)}`}>{d.expires_on && d.expires_on <= soon ? 'Expires soon' : d.status}</span>
             {admin && <button aria-label="Delete document" className="cursor-pointer text-xs text-muted hover:text-text" onClick={() => remove(d.id)}>✕</button>}
           </div>
