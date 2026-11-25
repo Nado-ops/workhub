@@ -27,7 +27,8 @@ and logins. Hosted on **Cloudflare Workers** (static assets).
 | Reports: tickets, remote support, projects, money (admin) | ✅ |
 | Study reminders (private) | ✅ |
 | File uploads: receipt photos, HR document files, ticket screenshots (private, images & PDFs, 10 MB) | ✅ |
-| Email notifications, client monthly reports, PDF downloads | 🔜 next |
+| Email notifications: new ticket, replies, assignment, quote/invoice sent, quote answered | ✅ (after the Emails setup) |
+| Client monthly reports, PDF downloads | 🔜 next |
 
 Designs for every screen: the "Work Hub" canvas in Claude.
 
@@ -40,6 +41,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 2. `002_ticket_deadlines.sql` — automatic ticket deadlines from priority
 3. `003_time_entry_delete.sql` — staff can remove their own unapproved time entries
 4. `004_file_uploads.sql` — private file storage for receipts, HR documents and ticket screenshots
+5. `005_email_notifications.sql` — email notifications (then follow "Emails" below)
 
 Then make yourself admin:
 
@@ -73,6 +75,42 @@ so refreshing any page works. Don't add a `public/_redirects` file — Cloudflar
 ### 4. Your business details
 Edit `src/lib/business.ts` with your business name, contact details and bank details
 (they print on every quote and invoice) and your annual leave allowance.
+
+## Emails
+
+Work Hub sends emails through **Resend** (free: 3,000 emails a month, 100 a day).
+The database sends them by itself, so there's nothing extra to host.
+
+| When | Who gets it |
+|---|---|
+| A client raises a ticket | All admins, plus a "we've got your ticket" email to the client |
+| The team replies on a ticket | The people who log in for that client |
+| A client replies | The person the ticket is assigned to (or all admins if nobody) |
+| A ticket is assigned | The person it's assigned to |
+| A quote or invoice is sent | The people who log in for that client |
+| A client accepts or declines a quote | All admins |
+
+Internal notes never send an email.
+
+### Setup (once)
+1. Sign up at resend.com.
+2. **Domains → Add domain.** Use a domain you own, ideally a subdomain like `mail.yourdomain.co.za`.
+   Add the DNS records Resend shows you at your DNS host, and wait until it says **Verified**.
+   (Until then Resend only delivers to your own email address.)
+3. **API Keys → Create API key** with "Sending access". Copy it (it starts with `re_`).
+4. In Supabase → **SQL Editor**, run these three lines with your own values:
+   ```sql
+   select vault.create_secret('re_YOUR_KEY', 'resend_api_key');
+   select vault.create_secret('Work Hub <support@mail.yourdomain.co.za>', 'email_from');
+   select vault.create_secret('https://YOUR-APP.workers.dev', 'app_url');
+   ```
+   They're stored encrypted in Supabase Vault, never in this repo.
+5. In the app → **Team & roles → Send me a test email**. The list below the button shows every email and whether Resend accepted it.
+
+To change a value later:
+```sql
+select vault.update_secret((select id from vault.secrets where name = 'resend_api_key'), 're_NEW_KEY');
+```
 
 ## Adding people
 1. Supabase → **Authentication → Users → Invite user** (enter their email).
