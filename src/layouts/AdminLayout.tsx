@@ -39,8 +39,7 @@ export default function AdminLayout() {
     <div className="flex min-h-screen flex-wrap items-start gap-4 p-4 md:p-5">
       <nav aria-label="Main" className="card flex w-full flex-col gap-0.5 p-3 md:sticky md:top-5 md:w-60">
         <NavLink to="/app" end className="mb-3 flex items-center gap-2.5 px-2 pt-1 no-underline text-text">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent font-bold text-accent-ink">W</span>
-          <span className="font-semibold">Work Hub</span>
+          <img src="/logo-wordmark-light.png" alt="Work Hub" className="h-8 w-auto" />
         </NavLink>
 
         <p className="px-2.5 pt-2 pb-1 text-[11px] tracking-widest text-muted">MAIN</p>

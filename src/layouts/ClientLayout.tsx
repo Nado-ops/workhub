@@ -25,7 +25,7 @@ export default function ClientLayout() {
     <div className="mx-auto flex max-w-6xl flex-col gap-4 p-4 md:p-5">
       <header className="card flex flex-wrap items-center justify-between gap-3 px-5 py-3.5">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent font-bold text-accent-ink">W</span>
+          <img src="/logo-mark-light.png" alt="Work Hub" className="h-8 w-auto" />
           <div>
             <p className="text-sm font-semibold">{company || 'Your company'}</p>
             <p className="text-xs text-muted">Support portal</p>

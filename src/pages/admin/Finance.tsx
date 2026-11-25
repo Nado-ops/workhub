@@ -340,7 +340,7 @@ function DocBuilder({
         </button>
 
         <label className="flex items-center gap-2.5 text-sm text-soft">
-          <input type="checkbox" className="h-4 w-4 accent-[#3FD0B5]" checked={vat} onChange={(e) => setVat(e.target.checked)} />
+          <input type="checkbox" className="h-4 w-4 accent-[#D4AF6A]" checked={vat} onChange={(e) => setVat(e.target.checked)} />
           Add VAT (15%) — turn off if you're not VAT-registered
         </label>
         <div className="grid gap-1.5 border-t border-line pt-3 text-sm">

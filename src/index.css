@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Work Hub colours — the same dark teal look as the designs */
+/* Work Hub colours — dark background with the gold from the logo */
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
   --color-ink: #0A1315;      /* page background */
@@ -11,10 +11,10 @@
   --color-text: #E6EEEE;
   --color-soft: #C9D6D7;
   --color-muted: #8FA3A5;
-  --color-accent: #3FD0B5;
-  --color-accent-ink: #062421;
+  --color-accent: #D4AF6A;   /* logo gold */
+  --color-accent-ink: #1C1405;
   --color-danger: #FF9A9A;
-  --color-warn: #F5C46A;
+  --color-warn: #F5A05B;
   --color-info: #9DBBFF;
 }
 

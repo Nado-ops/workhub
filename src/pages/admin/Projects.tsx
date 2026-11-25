@@ -198,7 +198,7 @@ function ProjectEditor({
           <input className="input" type="date" value={f.due_date} onChange={(e) => set('due_date', e.target.value)} />
         </label>
         <label className="flex basis-full items-center gap-2.5 text-sm text-soft">
-          <input type="checkbox" className="h-4 w-4 accent-[#3FD0B5]" checked={f.waiting_on_client} onChange={(e) => set('waiting_on_client', e.target.checked)} />
+          <input type="checkbox" className="h-4 w-4 accent-[#D4AF6A]" checked={f.waiting_on_client} onChange={(e) => set('waiting_on_client', e.target.checked)} />
           Waiting on the client (e.g. for a design approval)
         </label>
         <button className="btn-primary" disabled={busy}>{project ? 'Save changes' : 'Create project'}</button>
