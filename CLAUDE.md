@@ -62,12 +62,19 @@ keep code readable, and add short comments where something isn't obvious.
 - Calendar (`/app/calendar`) merges events, approved leave, task/project/invoice/renewal dates, CRM follow-ups,
   own study reminders and SA public holidays (`src/lib/holidays.ts`). Activity log (`/app/activity`, admin) has
   the JSON backup download.
-- Website CMS (migration 010): `sites` (client website; kind github/wordpress/other; admin manages), `site_fields`
+- Website CMS (migration 010): `sites` (client website; kind github/cloudflare/wordpress/other; admin manages), `site_fields`
   (editable parts found by scanning `data-cms` markers), `site_changes` (edit = new value for a field; request = words +
   photos), private bucket `site-images`. Publishing happens ONLY in the Cloudflare Worker (`worker/`): it calls Supabase
   with the user's own JWT (RLS applies), checks permission before touching GitHub, commits pages + photos in one
   commit, then calls `cms_mark_published()`. GitHub token = Cloudflare secret `GITHUB_TOKEN`. Rich text is sanitised
   on publish (`worker/html.ts`) and before display (`src/lib/richtext.ts`) — never render site HTML without it.
   Pages: admin `/app/websites`, client `/portal/website`. `wrangler.jsonc` runs the worker first only for `/api/*`.
+- Cloudflare Pages direct-upload sites (migration 011, kind `cloudflare`): Work Hub's copy = bucket `site-files`
+  + `site_files` (hash = Cloudflare's blake3 fingerprint, deployed_hash = live). Live page = uploaded copy + field values
+  that differ from `site_fields.base_value` (`buildLivePage`). Deploys use the Pages direct-upload API (`worker/pages.ts`);
+  secret `CLOUDFLARE_API_TOKEN`. Drift check: latest production deployment must equal `sites.cf_deployment_id`, else
+  publishing stops (someone uploaded in the dashboard). Browser upload = `src/lib/siteUpload.ts` (zip via fflate);
+  re-uploads merge (scan mode 'merge') and re-run auto-mark on pages that had fields. `cfHash` exists in both
+  `worker/pages.ts` and `src/lib/siteUpload.ts` — keep them identical.
 - Not built yet: study reminder emails, direct WordPress publishing (WordPress sites use requests).
 - Shared helpers: `src/lib/team.ts` (`useTeam`), `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts` (`useBusiness`), `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.

@@ -49,6 +49,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 8. `008_internal_work.sql` — internal tasks, knowledge base, announcements and in-app notifications (the bell)
 9. `009_reports_calendar_audit.sql` — business details, monthly client reports (+ email on the 1st), shared calendar, audit log, notification emails
 10. `010_website_cms.sql` — website CMS: client websites, editable fields, changes and requests, `site-images` bucket
+11. `011_cloudflare_pages_sites.sql` — website CMS for Cloudflare Pages sites without GitHub (direct upload): `site_files`, `site-files` bucket
 
 Then make yourself admin:
 
@@ -145,7 +146,13 @@ deployed by Cloudflare whenever that repo changes. Editable parts of a page carr
 Work Hub reads those parts, lets the client (or you) change them, and saves the change back to GitHub as a commit.
 Cloudflare then rebuilds the client's site — usually within a minute or two.
 
-WordPress and other sites can be added too; for now their clients send **change requests** (words + photos) that you do yourself.
+Three kinds of website:
+- **HTML on GitHub** (Cloudflare Pages or Workers connected to a GitHub repo): changes are committed to the repo and Cloudflare rebuilds.
+- **Cloudflare Pages, uploaded directly (no GitHub):** Work Hub keeps its own copy of the files. You upload new versions in
+  Work Hub (Websites → Files → Upload folder / Upload .zip) and Work Hub deploys them. Client edits are applied to that copy
+  and the site is re-deployed. If someone uploads straight in the Cloudflare dashboard instead, Work Hub notices and pauses
+  publishing until you upload the same files in Work Hub — so a client edit can never bring back an old version.
+- **WordPress and others:** for now their clients send **change requests** (words + photos) that you do yourself.
 
 ### One-time setup
 1. **Database:** run `supabase/migrations/010_website_cms.sql` in the Supabase SQL Editor.
@@ -159,11 +166,16 @@ WordPress and other sites can be added too; for now their clients send **change 
    - `GITHUB_TOKEN` — the token from step 2
    - `SUPABASE_URL` — same value as `VITE_SUPABASE_URL`
    - `SUPABASE_ANON_KEY` — same value as `VITE_SUPABASE_ANON_KEY`
+   - `CLOUDFLARE_API_TOKEN` — only for direct-upload Pages sites. Cloudflare → My Profile → API Tokens → Create Token →
+     Custom token → Permissions: **Account · Cloudflare Pages · Edit** → Account resources: your account → Create.
 4. Merge the pull request. Cloudflare deploys the app and the small server part (`worker/`) together.
 
 ### Adding a client website
-1. **Websites → Connect a website:** pick the client, give the live address, the repo (`owner/name`), branch and folder.
-2. **Scan website** — reads every `.html` page.
+1. **Websites → Connect a website:** pick the client and give the live address. Then either
+   - GitHub: the repo (`owner/name`), branch and folder — then press **Scan website**, or
+   - Cloudflare Pages (direct upload): the account ID (in the dashboard address) and the Pages project name — then on
+     **Files**, upload the website folder or a .zip (the folder with `index.html` in it). The project must already exist.
+2. Work Hub reads every `.html` page.
 3. **Pages → Auto-mark page** for each page the client should edit (e.g. `index.html`, `about/index.html`).
    It marks headings, paragraphs, photos and buttons (not menus, forms or scripts) and saves that to GitHub.
    You can also add markers yourself: `<h1 data-cms="hero-title" data-cms-label="Main heading">…</h1>`.
@@ -171,6 +183,10 @@ WordPress and other sites can be added too; for now their clients send **change 
 5. Leave "I review client edits" on (recommended) or switch it off so edits go live immediately.
 
 Photos clients upload are copied into the site at `/images/uploads/…` when published.
+
+**Uploading a new version of a direct-upload site:** edit your files as usual and upload them on **Files**. Parts you
+didn't change keep the client's edits; parts you changed use your new version. Editable markers are added back
+automatically, and client photos are kept. Server code (`functions/`, `_worker.js`) isn't supported in this upload.
 Rich text only keeps simple formatting (bold, italic, lists, links) — scripts and styles are always removed.
 
 ### Testing the server part locally (optional)

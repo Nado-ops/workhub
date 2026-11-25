@@ -2,10 +2,15 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../auth/AuthProvider'
 import { timeAgo } from '../../lib/format'
-import { CHANGE_STATUS, cmsApi, pageName, uploadPreview, type Site, type SiteChange, type SiteField } from '../../lib/cms'
+import { CHANGE_STATUS, cmsApi, isEditable, pageName, uploadPreview, type Site, type SiteChange, type SiteField } from '../../lib/cms'
 import FieldEditor, { ValueView } from '../../components/cms/FieldEditor'
 import { summary } from '../client/MyWebsite'
 import Tabs from '../../components/Tabs'
+import SiteFiles from '../../components/cms/SiteFiles'
+
+const KIND_LABEL: Record<Site['kind'], string> = {
+  github: 'GitHub + Cloudflare', cloudflare: 'Cloudflare Pages upload', wordpress: 'WordPress (requests)', other: 'Requests only',
+}
 
 /**
  * The team's side of the website CMS: connect client websites, mark the editable parts,
@@ -17,7 +22,7 @@ export default function Websites() {
   const [sites, setSites] = useState<Site[]>([])
   const [pendingBySite, setPendingBySite] = useState<Record<string, number>>({})
   const [selected, setSelected] = useState<string | 'new' | null>(null)
-  const [github, setGithub] = useState<boolean | null>(null)
+  const [conn, setConn] = useState<{ github: boolean; cloudflare: boolean } | null>(null)
 
   async function load() {
     const [s, p] = await Promise.all([
@@ -33,7 +38,9 @@ export default function Websites() {
   }
   useEffect(() => {
     load()
-    cmsApi<{ github_connected: boolean }>('status').then((s) => setGithub(s.github_connected)).catch(() => setGithub(false))
+    cmsApi<{ github_connected: boolean; cloudflare_connected: boolean }>('status')
+      .then((s) => setConn({ github: s.github_connected, cloudflare: s.cloudflare_connected }))
+      .catch(() => setConn({ github: false, cloudflare: false }))
   }, [])
 
   const site = sites.find((s) => s.id === selected) ?? null
@@ -43,15 +50,15 @@ export default function Websites() {
       <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
           <h1 className="text-2xl font-semibold">Websites</h1>
-          <p className="mt-1 text-sm text-muted">Client websites they can update from their portal. Changes are saved to GitHub and Cloudflare publishes them.</p>
+          <p className="mt-1 text-sm text-muted">Client websites they can update from their portal. Changes go live through GitHub or straight to Cloudflare Pages.</p>
         </div>
         {isAdmin && <button className="btn-primary" onClick={() => setSelected('new')}>+ Connect a website</button>}
       </div>
 
-      {github === false && (
+      {conn && (!conn.github || !conn.cloudflare) && sites.some((s) => (s.kind === 'github' && !conn.github) || (s.kind === 'cloudflare' && !conn.cloudflare)) && (
         <div className="card border-warn/30 bg-warn-soft p-4 text-sm">
-          <p className="font-semibold text-warn">GitHub isn’t connected yet</p>
-          <p className="mt-1 text-soft">You can add websites and take change requests now. To publish edits, add the GitHub token in Cloudflare (see README → Website CMS).</p>
+          <p className="font-semibold text-warn">{!conn.github && !conn.cloudflare ? 'GitHub and Cloudflare aren’t' : !conn.github ? 'GitHub isn’t' : 'Cloudflare isn’t'} connected yet</p>
+          <p className="mt-1 text-soft">You can add websites and take change requests now. To publish edits, add the {!conn.github ? 'GITHUB_TOKEN' : ''}{!conn.github && !conn.cloudflare ? ' and ' : ''}{!conn.cloudflare ? 'CLOUDFLARE_API_TOKEN' : ''} secret in Cloudflare (see README → Website CMS).</p>
         </div>
       )}
 
@@ -65,22 +72,23 @@ export default function Websites() {
                 <span className="font-semibold">{s.name}</span>
                 {pendingBySite[s.id] ? <span className="pill bg-warn-soft text-warn">{pendingBySite[s.id]} new</span> : null}
               </span>
-              <span className="block text-xs text-muted">{s.client?.name} · {s.kind === 'github' ? 'GitHub + Cloudflare' : s.kind === 'wordpress' ? 'WordPress (requests)' : 'Requests only'}</span>
+              <span className="block text-xs text-muted">{[s.client?.name, KIND_LABEL[s.kind]].filter(Boolean).join(' · ')}</span>
             </button>
           ))}
         </aside>
 
         <div className="min-w-0 flex-[1_1_560px]">
           {selected === 'new' && <SiteForm site={null} onDone={(id) => { load(); setSelected(id) }} />}
-          {site && <SitePanel key={site.id} site={site} isAdmin={isAdmin} github={github === true} onChange={load} />}
+          {site && <SitePanel key={site.id} site={site} isAdmin={isAdmin} connected={site.kind === 'cloudflare' ? conn?.cloudflare === true : conn?.github === true} onChange={load} />}
         </div>
       </div>
     </div>
   )
 }
 
-function SitePanel({ site, isAdmin, github, onChange }: { site: Site; isAdmin: boolean; github: boolean; onChange: () => void }) {
-  const [tab, setTab] = useState<'inbox' | 'pages' | 'history' | 'settings'>('inbox')
+// connected = the service this site publishes through (GitHub or Cloudflare) has its key set up
+function SitePanel({ site, isAdmin, connected, onChange }: { site: Site; isAdmin: boolean; connected: boolean; onChange: () => void }) {
+  const [tab, setTab] = useState<'inbox' | 'pages' | 'files' | 'history' | 'settings'>(site.kind === 'cloudflare' && !site.cf_deployment_id ? 'files' : 'inbox')
   const [fields, setFields] = useState<SiteField[]>([])
   const [changes, setChanges] = useState<SiteChange[]>([])
   const [busy, setBusy] = useState(false)
@@ -114,6 +122,7 @@ function SitePanel({ site, isAdmin, github, onChange }: { site: Site; isAdmin: b
 
   const inbox = changes.filter((c) => c.status === 'submitted' || c.status === 'failed')
   const isGit = site.kind === 'github'
+  const editable = isEditable(site)
 
   return (
     <section className="card overflow-hidden">
@@ -121,23 +130,27 @@ function SitePanel({ site, isAdmin, github, onChange }: { site: Site; isAdmin: b
         <div className="min-w-0">
           <h2 className="text-lg font-semibold">{site.name}</h2>
           <p className="text-sm text-muted">
-            {site.client?.name}
-            {site.url && <> · <a href={site.url} target="_blank" rel="noopener" className="text-accent-text">{site.url.replace(/^https?:\/\//, '')} ↗</a></>}
-            {isGit && <> · {site.repo} ({site.branch}{site.folder ? `, /${site.folder}` : ''})</>}
+            {[
+              site.client?.name,
+              site.url && <a key="url" href={site.url} target="_blank" rel="noopener" className="text-accent-text">{site.url.replace(/^https?:\/\//, '')} ↗</a>,
+              isGit && `${site.repo} (${site.branch}${site.folder ? `, /${site.folder}` : ''})`,
+              site.kind === 'cloudflare' && `Pages project ${site.cf_project}`,
+            ].filter(Boolean).map((part, i) => <span key={i}>{i > 0 && ' · '}{part}</span>)}
           </p>
           <p className="text-xs text-muted">
             {site.requires_approval ? 'Client edits wait for approval' : 'Client edits go live straight away'}
             {site.last_scanned_at ? ` · scanned ${timeAgo(site.last_scanned_at)}` : ''}
           </p>
         </div>
-        {isGit && <button className="btn-ghost h-9" onClick={scan} disabled={busy || !github}>{busy ? 'Working…' : 'Scan website'}</button>}
+        {editable && <button className="btn-ghost h-9" onClick={scan} disabled={busy || !connected || (site.kind === 'cloudflare' && !site.cf_deployment_id)}>{busy ? 'Working…' : 'Scan website'}</button>}
       </div>
       {msg && <p className={`mx-5 mb-3 rounded-xl px-4 py-2.5 text-sm ${msg.ok ? 'bg-success-soft text-success' : 'bg-danger-soft text-danger'}`} role="status">{msg.text}</p>}
 
       <Tabs
         tabs={[
           { key: 'inbox', label: 'Inbox', count: inbox.length },
-          ...(isGit ? [{ key: 'pages' as const, label: 'Pages' }] : []),
+          ...(editable ? [{ key: 'pages' as const, label: 'Pages' }] : []),
+          ...(site.kind === 'cloudflare' ? [{ key: 'files' as const, label: 'Files' }] : []),
           { key: 'history', label: 'History' },
           ...(isAdmin ? [{ key: 'settings' as const, label: 'Settings' }] : []),
         ]}
@@ -145,8 +158,9 @@ function SitePanel({ site, isAdmin, github, onChange }: { site: Site; isAdmin: b
         onChange={setTab}
       />
       <div className="p-5">
-        {tab === 'inbox' && <Inbox site={site} labels={Object.fromEntries(fields.map((f) => [`${f.page}|${f.key}`, f.label ?? f.key]))} changes={inbox} busy={busy} canPublish={github} onPublish={publish} onChange={() => { load(); onChange() }} />}
-        {tab === 'pages' && <Pages site={site} fields={fields} isAdmin={isAdmin} busy={busy} github={github} onRun={run} onPublish={publish} onReload={load} />}
+        {tab === 'inbox' && <Inbox site={site} labels={Object.fromEntries(fields.map((f) => [`${f.page}|${f.key}`, f.label ?? f.key]))} changes={inbox} busy={busy} canPublish={connected} onPublish={publish} onChange={() => { load(); onChange() }} />}
+        {tab === 'pages' && <Pages site={site} fields={fields} isAdmin={isAdmin} busy={busy} connected={connected} onRun={run} onPublish={publish} onReload={load} />}
+        {tab === 'files' && <SiteFiles site={site} isAdmin={isAdmin} connected={connected} onDone={() => { load(); onChange() }} />}
         {tab === 'history' && <HistoryList changes={changes} />}
         {tab === 'settings' && <SiteForm site={site} onDone={() => onChange()} />}
       </div>
@@ -240,8 +254,8 @@ function RequestCard({ change: c, onDone, onReject }: { change: SiteChange; onDo
 }
 
 /** The editable parts of each page. The team's edits publish straight away. */
-function Pages({ site, fields, isAdmin, busy, github, onRun, onPublish, onReload }: {
-  site: Site; fields: SiteField[]; isAdmin: boolean; busy: boolean; github: boolean
+function Pages({ site, fields, isAdmin, busy, connected, onRun, onPublish, onReload }: {
+  site: Site; fields: SiteField[]; isAdmin: boolean; busy: boolean; connected: boolean
   onRun: (label: string, fn: () => Promise<string>) => void; onPublish: (ids: string[]) => void; onReload: () => void
 }) {
   const pages = useMemo(() => [...new Set(fields.map((f) => f.page))], [fields])
@@ -264,7 +278,7 @@ function Pages({ site, fields, isAdmin, busy, github, onRun, onPublish, onReload
     onReload()
   }
   const automark = () => {
-    if (!window.confirm(`Mark the headings, text, photos and buttons on ${markPage} as editable? This saves a small change to the website's code.`)) return
+    if (!window.confirm(`Mark the headings, text, photos and buttons on ${markPage} as editable? This saves a small change to the website's code and publishes it.`)) return
     onRun('Auto-mark', async () => {
       const r = await cmsApi<{ added: number; fields: number }>('automark', { site_id: site.id, page: markPage })
       return r.added ? `Marked ${r.added} new parts. ${markPage} now has ${r.fields} editable parts.` : `Nothing new to mark on ${markPage}.`
@@ -278,7 +292,7 @@ function Pages({ site, fields, isAdmin, busy, github, onRun, onPublish, onReload
           <label className="label flex-[1_1_200px]">Make a page editable (file in the website folder)
             <input className="input" value={markPage} onChange={(e) => setMarkPage(e.target.value)} placeholder="index.html or about/index.html" />
           </label>
-          <button className="btn-ghost" onClick={automark} disabled={busy || !github}>Auto-mark page</button>
+          <button className="btn-ghost" onClick={automark} disabled={busy || !connected}>Auto-mark page</button>
           <p className="basis-full text-xs text-muted">Finds headings, paragraphs, photos and buttons (not menus or forms) and adds <code>data-cms</code> markers. You can also add <code>data-cms="name"</code> to any element yourself, then press Scan website.</p>
         </div>
       )}
@@ -293,7 +307,7 @@ function Pages({ site, fields, isAdmin, busy, github, onRun, onPublish, onReload
       )}
       {fields.filter((f) => f.page === page).map((f) => (
         <div key={f.id} className="relative">
-          <FieldEditor site={site} field={f} busy={busy || !github} onSave={(v) => save(f, v)} />
+          <FieldEditor site={site} field={f} busy={busy || !connected} onSave={(v) => save(f, v)} />
           <button className="absolute top-3.5 right-28 text-xs text-muted hover:text-text" onClick={() => rename(f)} title="Rename for the client">Rename</button>
         </div>
       ))}
@@ -325,6 +339,7 @@ function SiteForm({ site, onDone }: { site: Site | null; onDone: (id: string) =>
   const [f, setF] = useState({
     client_id: site?.client_id ?? '', name: site?.name ?? '', url: site?.url ?? '', kind: site?.kind ?? 'github',
     repo: site?.repo ?? '', branch: site?.branch ?? 'main', folder: site?.folder ?? 'public', requires_approval: site?.requires_approval ?? true,
+    cf_account_id: site?.cf_account_id ?? '', cf_project: site?.cf_project ?? '',
   })
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
@@ -334,11 +349,20 @@ function SiteForm({ site, onDone }: { site: Site | null; onDone: (id: string) =>
   async function submit(e: FormEvent) {
     e.preventDefault()
     const repo = f.repo.trim().replace(/^https?:\/\/github\.com\//i, '').replace(/\.git$/, '').replace(/\/$/, '')
-    const row = { ...f, name: f.name.trim(), url: f.url.trim() || null, repo: f.kind === 'github' ? repo : null, folder: f.folder.trim().replace(/^\/|\/$/g, ''), branch: f.branch.trim() || 'main' }
+    const cf = f.kind === 'cloudflare'
+    const row = {
+      ...f, name: f.name.trim(), url: f.url.trim() || null, repo: f.kind === 'github' ? repo : null,
+      folder: f.folder.trim().replace(/^\/|\/$/g, ''), branch: f.branch.trim() || 'main',
+      cf_account_id: cf ? f.cf_account_id.trim().toLowerCase() : null, cf_project: cf ? f.cf_project.trim().toLowerCase() : null,
+    }
     const res = site
       ? await supabase.from('sites').update(row).eq('id', site.id).select('id').single()
       : await supabase.from('sites').insert(row).select('id').single()
-    if (res.error) return setError(res.error.message.includes('sites_check') ? 'The GitHub repo should look like owner/name, e.g. Nado-ops/harbour-dental.' : res.error.message)
+    if (res.error) {
+      const m = res.error.message
+      return setError(m.includes('sites_cloudflare_check') ? 'Check the Cloudflare account ID (32 letters and numbers) and the Pages project name (lowercase, e.g. kloof-bakery).'
+        : m.includes('sites_check') ? 'The GitHub repo should look like owner/name, e.g. Nado-ops/harbour-dental.' : m)
+    }
     setError(null); setSaved(true)
     onDone((res.data as { id: string }).id)
   }
@@ -361,7 +385,8 @@ function SiteForm({ site, onDone }: { site: Site | null; onDone: (id: string) =>
       <label className="label flex-[2_1_240px]">Live address<input className="input" type="url" value={f.url} onChange={(e) => set('url', e.target.value)} placeholder="https://harbourdental.co.za" /></label>
       <label className="label flex-[1_1_200px]">Built with
         <select className="input" value={f.kind} onChange={(e) => set('kind', e.target.value)}>
-          <option value="github">HTML on GitHub + Cloudflare</option>
+          <option value="github">HTML on GitHub (Cloudflare Pages or Workers)</option>
+          <option value="cloudflare">Cloudflare Pages, uploaded directly (no GitHub)</option>
           <option value="wordpress">WordPress (requests for now)</option>
           <option value="other">Something else (requests only)</option>
         </select>
@@ -370,6 +395,13 @@ function SiteForm({ site, onDone }: { site: Site | null; onDone: (id: string) =>
         <label className="label flex-[2_1_220px]">GitHub repo<input className="input" required value={f.repo} onChange={(e) => set('repo', e.target.value)} placeholder="Nado-ops/harbour-dental" /></label>
         <label className="label flex-[1_1_120px]">Branch<input className="input" value={f.branch} onChange={(e) => set('branch', e.target.value)} /></label>
         <label className="label flex-[1_1_140px]">Folder with the HTML<input className="input" value={f.folder} onChange={(e) => set('folder', e.target.value)} placeholder="public (empty = top level)" /></label>
+      </>}
+      {f.kind === 'cloudflare' && <>
+        <label className="label flex-[2_1_260px]">Cloudflare account ID
+          <input className="input font-mono text-sm" required value={f.cf_account_id} onChange={(e) => set('cf_account_id', e.target.value)} placeholder="32 letters/numbers, from the dashboard address" />
+        </label>
+        <label className="label flex-[1_1_180px]">Pages project name<input className="input" required value={f.cf_project} onChange={(e) => set('cf_project', e.target.value)} placeholder="kloof-bakery" /></label>
+        <p className="basis-full text-xs text-muted">The account ID is in the Cloudflare dashboard address (dash.cloudflare.com/<b>your-account-id</b>/…) or on Workers &amp; Pages → right-hand side. The project must already exist in Cloudflare Pages.</p>
       </>}
       <label className="flex basis-full items-center gap-2 text-sm text-soft">
         <input type="checkbox" className="h-4 w-4 accent-[#B8893A]" checked={f.requires_approval} onChange={(e) => set('requires_approval', e.target.checked)} />
@@ -380,6 +412,7 @@ function SiteForm({ site, onDone }: { site: Site | null; onDone: (id: string) =>
       {saved && <span className="text-sm text-success">Saved</span>}
       {error && <p className="basis-full text-sm text-danger">{error}</p>}
       {!site && f.kind === 'github' && <p className="basis-full text-xs text-muted">Next: press Scan website, then Auto-mark the pages the client should be able to edit.</p>}
+      {!site && f.kind === 'cloudflare' && <p className="basis-full text-xs text-muted">Next: on the Files tab, upload the website (its folder or a .zip). Then Auto-mark the pages the client should be able to edit.</p>}
     </form>
   )
 }

@@ -3,8 +3,9 @@ import { supabase } from './supabase'
 
 export type FieldType = 'text' | 'richtext' | 'image' | 'link'
 export interface Site {
-  id: string; client_id: string; name: string; url: string | null; kind: 'github' | 'wordpress' | 'other'
+  id: string; client_id: string; name: string; url: string | null; kind: 'github' | 'cloudflare' | 'wordpress' | 'other'
   repo: string | null; branch: string; folder: string; requires_approval: boolean; last_scanned_at: string | null
+  cf_account_id: string | null; cf_project: string | null; cf_deployment_id: string | null; cf_deployed_at: string | null
   client?: { name: string } | null
 }
 export interface SiteField { id: string; site_id: string; page: string; key: string; type: FieldType; label: string | null; value: string | null; position: number }
@@ -27,6 +28,9 @@ export const CHANGE_STATUS: Record<SiteChange['status'], { text: string; tone: s
   failed: { text: 'Didn’t publish', tone: 'bg-danger-soft text-danger' },
 }
 
+/** Websites Work Hub can edit directly (the others take change requests). */
+export const isEditable = (site: Pick<Site, 'kind'>) => site.kind === 'github' || site.kind === 'cloudflare'
+
 /** "about/index.html" → "About", "index.html" → "Home", "services.html" → "Services" */
 export function pageName(page: string) {
   if (page === 'index.html') return 'Home'
@@ -45,7 +49,7 @@ export function imageUrl(site: Site, src: string) {
 }
 
 /** Call the Work Hub server (worker/index.ts) with your login. */
-export async function cmsApi<T = unknown>(path: 'scan' | 'automark' | 'publish' | 'status', body?: unknown): Promise<T> {
+export async function cmsApi<T = unknown>(path: 'scan' | 'automark' | 'publish' | 'status' | 'cf-status' | 'cf-missing' | 'cf-upload' | 'cf-deploy', body?: unknown): Promise<T> {
   const { data } = await supabase.auth.getSession()
   const res = await fetch(`/api/cms/${path}`, {
     method: body === undefined ? 'GET' : 'POST',
