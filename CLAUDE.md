@@ -43,5 +43,6 @@ keep code readable, and add short comments where something isn't obvious.
 - Emails: database triggers call Resend through pg_net (migration 005). Settings live in Supabase Vault
   (`resend_api_key`, `email_from`, `app_url`), read with `public.setting()`. Send with `public.send_email()`;
   every email is logged in `email_log`. Never email clients about internal notes.
+- Vendors (admin only, migration 006): pg_cron runs `email_vendor_renewals()` daily at 06:00 UTC.
 - Not built yet: client monthly reports, PDF downloads.
 - Shared helpers: `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`, `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.
