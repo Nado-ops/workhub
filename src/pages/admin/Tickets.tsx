@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import type { Client, Priority, Ticket } from '../../lib/types'
 import { PRIORITY_LABEL, PRIORITY_STYLE, STATUS_LABEL, STATUS_STYLE, slaClock, ticketRef, timeAgo } from '../../lib/format'
@@ -9,6 +9,7 @@ type Tab = 'all' | 'action' | 'waiting' | 'escalated'
 
 /** The support ticket queue for admin and staff, sorted by deadline. */
 export default function Tickets() {
+  const navigate = useNavigate()
   const [rows, setRows] = useState<Row[]>([])
   const [clients, setClients] = useState<Pick<Client, 'id' | 'name'>[]>([])
   const [tab, setTab] = useState<Tab>('all')
@@ -121,7 +122,8 @@ export default function Tickets() {
               </thead>
               <tbody>
                 {filtered.map((r) => (
-                  <tr key={r.id} className="hover:bg-hover">
+                  // The whole row opens the ticket (the title stays a real link for keyboard and new-tab use).
+                  <tr key={r.id} className="cursor-pointer hover:bg-hover" onClick={() => navigate(`/app/tickets/${r.id}`)}>
                     <td className="td">
                       <Link to={`/app/tickets/${r.id}`} className="font-medium text-text no-underline hover:text-accent-text">{r.title}</Link>
                       <p className="mt-0.5 text-xs text-muted">{ticketRef(r.id)} · opened {timeAgo(r.created_at)}</p>
