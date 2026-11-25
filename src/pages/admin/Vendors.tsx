@@ -114,7 +114,7 @@ export default function Vendors() {
             <input aria-label="Search vendors" className="flex-1 bg-transparent text-sm outline-none" placeholder="Search by name, use, client or account" value={search} onChange={(e) => setSearch(e.target.value)} />
           </label>
           <label className="flex items-center gap-2 text-sm text-soft">
-            <input type="checkbox" className="h-4 w-4 accent-[#3FD0B5]" checked={showCancelled} onChange={(e) => setShowCancelled(e.target.checked)} />
+            <input type="checkbox" className="h-4 w-4 accent-[#D4AF6A]" checked={showCancelled} onChange={(e) => setShowCancelled(e.target.checked)} />
             Show cancelled
           </label>
         </div>

@@ -78,13 +78,12 @@ export default function Login() {
           style={{ background: 'linear-gradient(90deg, rgba(8,14,30,0.78) 0%, rgba(8,14,30,0.45) 45%, rgba(8,14,30,0) 75%), linear-gradient(0deg, rgba(8,14,30,0.65) 0%, rgba(8,14,30,0) 40%)' }}
         />
 
-        <div className="relative flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-lg font-bold text-accent-ink">W</span>
-          <span className="text-lg font-semibold">Work Hub</span>
+        <div className="relative">
+          <img src="/logo-light.png" alt="Work Hub — Small steps. Real progress." className="h-14 w-auto md:h-16" />
         </div>
 
         <div className="relative max-w-[440px] py-8 md:py-0">
-          <p className="text-sm text-[#F5C46A]">{greeting}</p>
+          <p className="text-sm text-accent">{greeting}</p>
           <div key={line} className="quote-in" aria-live="polite">
             <p className="mt-4 text-[11px] font-semibold tracking-[0.2em] text-accent uppercase">{current.tag}</p>
             <p className="mt-2 text-2xl leading-snug font-semibold md:text-4xl md:leading-tight">{current.text}</p>

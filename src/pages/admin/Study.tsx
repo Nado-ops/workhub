@@ -72,7 +72,7 @@ export default function Study() {
 
   const Item = ({ r }: { r: Reminder }) => (
     <div className="flex items-center gap-3 border-t border-line py-3">
-      <input type="checkbox" checked={r.done} onChange={() => toggle(r)} aria-label={`Done: ${r.title}`} className="h-5 w-5 shrink-0 accent-[#3FD0B5]" />
+      <input type="checkbox" checked={r.done} onChange={() => toggle(r)} aria-label={`Done: ${r.title}`} className="h-5 w-5 shrink-0 accent-[#D4AF6A]" />
       <div className="min-w-0 flex-1">
         <p className={`text-sm font-medium ${r.done ? 'text-muted line-through' : ''}`}>{r.title}</p>
         <p className="text-xs text-muted">{r.goal}{r.minutes ? ` · ${r.minutes} min` : ''}</p>

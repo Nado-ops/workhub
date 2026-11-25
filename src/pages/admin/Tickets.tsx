@@ -76,7 +76,7 @@ export default function Tickets() {
           {atRisk === 0 ? 'Nothing is close to its deadline' : `${atRisk} ${atRisk === 1 ? 'ticket is' : 'tickets are'} late or due within 4 hours`}
         </p>
         <div className="mt-3 mb-2.5 flex h-2 gap-1">
-          {([['breach', '#FF7A7A'], ['soon', '#F5C46A'], ['today', '#E8D77A'], ['later', '#3FD0B5'], ['paused', '#33464A']] as const).map(([k, c]) =>
+          {([['breach', '#FF7A7A'], ['soon', '#F5A05B'], ['today', '#E8D77A'], ['later', '#6FCF97'], ['paused', '#33464A']] as const).map(([k, c]) =>
             counts[k] > 0 ? <div key={k} className="rounded" style={{ flex: counts[k], background: c, minWidth: 12 }} /> : null,
           )}
           {withClock.length === 0 && <div className="flex-1 rounded bg-[#1A292C]" />}
@@ -85,7 +85,7 @@ export default function Tickets() {
           <span><span className="text-[#FF7A7A]">●</span> Late <b>{counts.breach}</b></span>
           <span><span className="text-warn">●</span> Under 4 h <b>{counts.soon}</b></span>
           <span><span className="text-[#E8D77A]">●</span> Today <b>{counts.today}</b></span>
-          <span><span className="text-accent">●</span> Later <b>{counts.later}</b></span>
+          <span><span className="text-[#6FCF97]">●</span> Later <b>{counts.later}</b></span>
           <span><span className="text-muted">●</span> Paused <b>{counts.paused}</b></span>
         </div>
       </section>
