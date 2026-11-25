@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../auth/AuthProvider'
 import { timeAgo } from '../../lib/format'
-import { CHANGE_STATUS, cmsApi, pageName, type Site, type SiteChange, type SiteField } from '../../lib/cms'
+import { CHANGE_STATUS, cmsApi, isEditable, pageName, type Site, type SiteChange, type SiteField } from '../../lib/cms'
 import { textOnly } from '../../lib/richtext'
 import FieldEditor from '../../components/cms/FieldEditor'
 import Tabs from '../../components/Tabs'
@@ -45,7 +45,7 @@ export default function MyWebsite() {
   const pages = useMemo(() => [...new Set(fields.map((f) => f.page))].sort((a, b) => (a === 'index.html' ? -1 : b === 'index.html' ? 1 : a.localeCompare(b))), [fields])
   useEffect(() => { if (pages.length && !pages.includes(page)) setPage(pages[0]) }, [pages, page])
   const waiting = new Set(changes.filter((c) => c.status === 'submitted' && c.kind === 'edit').map((c) => `${c.page}|${c.field_key}`))
-  const canEdit = site?.kind === 'github' && fields.length > 0
+  const canEdit = !!site && isEditable(site) && fields.length > 0
 
   async function save(field: SiteField, value: string) {
     if (!site || value === (field.value ?? '')) return

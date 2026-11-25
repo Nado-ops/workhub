@@ -11,7 +11,9 @@
     "check:worker": "tsc -p worker/tsconfig.json"
   },
   "dependencies": {
+    "@noble/hashes": "^2.4.0",
     "@supabase/supabase-js": "^2.119.2",
+    "fflate": "^0.8.3",
     "node-html-parser": "^9.0.7",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
