@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { useAuth } from '../auth/AuthProvider'
-import type { Role } from '../lib/types'
+import { canDo, useAuth } from '../auth/AuthProvider'
+import type { Permission, Role } from '../lib/types'
 import NotificationBell from '../components/NotificationBell'
 
 interface Item {
@@ -8,6 +8,7 @@ interface Item {
   label: string
   staffLabel?: string
   roles: Role[] // who sees this menu item
+  perm?: Permission // …and, for staff, which custom-role power they need
 }
 
 const MAIN: Item[] = [
@@ -20,8 +21,8 @@ const MAIN: Item[] = [
   { to: '/app/projects', label: 'Projects', roles: ['admin', 'staff'] },
   { to: '/app/websites', label: 'Websites', roles: ['admin', 'staff'] },
   { to: '/app/pipeline', label: 'CRM pipeline', roles: ['admin', 'staff'] },
-  { to: '/app/finance', label: 'Finance', roles: ['admin'] },
-  { to: '/app/vendors', label: 'Vendors', roles: ['admin'] },
+  { to: '/app/finance', label: 'Finance', roles: ['admin', 'staff'], perm: 'finance' },
+  { to: '/app/vendors', label: 'Vendors', roles: ['admin', 'staff'], perm: 'finance' },
   { to: '/app/reports', label: 'Reports', roles: ['admin', 'staff'] },
   { to: '/app/study', label: 'Study reminders', roles: ['admin'] },
 ]
@@ -38,7 +39,7 @@ const WORKSPACE: Item[] = [
 export default function AdminLayout() {
   const { profile, signOut } = useAuth()
   const role = profile?.role ?? 'staff'
-  const visible = (items: Item[]) => items.filter((i) => i.roles.includes(role))
+  const visible = (items: Item[]) => items.filter((i) => i.roles.includes(role) && (!i.perm || canDo(profile, i.perm)))
 
   const link = ({ isActive }: { isActive: boolean }) =>
     `flex rounded-lg px-2.5 py-2 text-sm no-underline ${isActive ? 'bg-hover font-semibold text-text shadow-[inset_3px_0_0_var(--color-accent)]' : 'text-soft hover:bg-hover hover:text-text'}`
@@ -63,13 +64,13 @@ export default function AdminLayout() {
         <p className="px-2.5 pt-4 pb-1 text-[11px] tracking-widest text-muted">WORKSPACE</p>
         {visible(WORKSPACE).map((i) => (
           <NavLink key={i.to} to={i.to} className={link}>
-            {role === 'staff' && i.staffLabel ? i.staffLabel : i.label}
+            {role === 'staff' && i.staffLabel && !canDo(profile, 'hr') ? i.staffLabel : i.label}
           </NavLink>
         ))}
 
         <div className="mt-4 border-t border-line px-2.5 pt-3">
           <p className="truncate text-sm font-medium">{profile?.full_name || profile?.email}</p>
-          <p className="text-xs text-muted capitalize">{role}</p>
+          <p className="text-xs text-muted capitalize">{role}{role === 'staff' && profile?.custom_role ? ` · ${profile.custom_role.name}` : ''}</p>
           <button onClick={signOut} className="mt-2 text-xs text-muted hover:text-text cursor-pointer">Sign out</button>
         </div>
       </nav>

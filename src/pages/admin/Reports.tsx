@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../auth/AuthProvider'
+import { canDo, useAuth } from '../../auth/AuthProvider'
 import { rand, todayISO } from '../../lib/format'
 import { docStatus } from '../../lib/finance'
 import type { Doc, DocTotals, Ticket } from '../../lib/types'
@@ -18,7 +18,7 @@ const hrs = (mins: number) => Math.round((mins / 60) * 10) / 10
 /** Reports from live data. Staff see everything except money. */
 export default function Reports() {
   const { profile } = useAuth()
-  const isAdmin = profile?.role === 'admin'
+  const isAdmin = canDo(profile, 'finance') // the Money tab
   const [tab, setTab] = useState<Tab>('tickets')
 
   const tabs: { key: Tab; label: string }[] = [

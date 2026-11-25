@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../auth/AuthProvider'
+import { canDo, useAuth } from '../../auth/AuthProvider'
 import type { Claim, Client, Decision, Profile } from '../../lib/types'
 import { rand, shortDate, todayISO } from '../../lib/format'
 import { LEAVE_POLICY } from '../../lib/business'
@@ -50,7 +50,7 @@ type StaffTab = 'leave' | 'time' | 'claims' | 'docs'
 /** HR & people. Admins manage everyone; staff see and manage only their own things. */
 export default function HR() {
   const { profile } = useAuth()
-  const isAdmin = profile?.role === 'admin'
+  const isAdmin = canDo(profile, 'hr') // admins, and staff whose role includes HR
   const [adminTab, setAdminTab] = useState<AdminTab>('people')
   const [staffTab, setStaffTab] = useState<StaffTab>('leave')
 

@@ -12,6 +12,7 @@
 import { GitHub, repoPath } from './github'
 import { applyEdits, autoMark, scanFields, KEY_PATTERN, type Edit, type FieldType } from './html'
 import { Pages, cfHash, contentType, isServerCode, SPECIAL_FILES, toBase64 } from './pages'
+import { UserAdmin } from './users'
 
 export interface Env {
   ASSETS: Fetcher
@@ -19,6 +20,7 @@ export interface Env {
   SUPABASE_ANON_KEY: string
   GITHUB_TOKEN?: string
   CLOUDFLARE_API_TOKEN?: string
+  SUPABASE_SERVICE_ROLE_KEY?: string // only for adding people / blocking logins (worker/users.ts)
   GITHUB_API?: string     // only for testing
   CLOUDFLARE_API?: string // only for testing
 }
@@ -32,7 +34,7 @@ interface Change {
   field_type: FieldType | null; new_value: string | null; status: string; created_by: string | null; created_at: string
 }
 interface SiteFile { path: string; hash: string; deployed_hash: string | null; source: string; size: number; content_type: string | null }
-interface Me { id: string; role: 'admin' | 'staff' | 'client'; client_id: string | null; full_name: string | null }
+interface Me { id: string; role: 'admin' | 'staff' | 'client'; client_id: string | null; full_name: string | null; custom_role?: { permissions: string[] } | null }
 
 class HttpError extends Error { constructor(public status: number, message: string) { super(message) } }
 
@@ -46,7 +48,7 @@ export default {
       const body = request.method === 'POST' ? ((await request.json().catch(() => ({}))) as Record<string, unknown>) : {}
       const siteId = String(body.site_id ?? '')
       switch (url.pathname) {
-        case '/api/cms/status': return json({ github_connected: Boolean(env.GITHUB_TOKEN), cloudflare_connected: Boolean(env.CLOUDFLARE_API_TOKEN), role: db.me.role })
+        case '/api/cms/status': return json({ github_connected: Boolean(env.GITHUB_TOKEN), cloudflare_connected: Boolean(env.CLOUDFLARE_API_TOKEN), users_ready: Boolean(env.SUPABASE_SERVICE_ROLE_KEY), role: db.me.role })
         case '/api/cms/scan': return json(await scan(db, env, siteId))
         case '/api/cms/automark': return json(await automark(db, env, siteId, String(body.page ?? '')))
         case '/api/cms/publish': return json(await publish(db, env, (body.change_ids as string[] | undefined) ?? []))
@@ -55,6 +57,11 @@ export default {
         case '/api/cms/cf-missing': return json(await cfMissing(db, env, siteId, (body.hashes as string[] | undefined) ?? []))
         case '/api/cms/cf-upload': return json(await cfUpload(db, env, siteId, (body.files as UploadFile[] | undefined) ?? []))
         case '/api/cms/cf-deploy': return json(await cfDeployFresh(db, env, siteId))
+        // People (Team & settings) — admins only
+        case '/api/users/list': return json(await usersList(db, env))
+        case '/api/users/invite': return json(await usersInvite(db, env, request, body))
+        case '/api/users/access': return json(await usersAccess(db, env, String(body.user_id ?? ''), Boolean(body.blocked)))
+        case '/api/users/link': return json(await usersLink(db, env, request, String(body.user_id ?? '')))
         default: throw new HttpError(404, 'Not found')
       }
     } catch (e) {
@@ -83,7 +90,7 @@ class Db {
     if (!res.ok) throw new HttpError(401, 'Your login has expired. Please log in again.')
     const user = (await res.json()) as { id: string }
     const db = new Db(env, token, { id: user.id, role: 'client', client_id: null, full_name: null })
-    const [me] = await db.get<Me>(`profiles?id=eq.${user.id}&select=id,role,client_id,full_name`)
+    const [me] = await db.get<Me>(`profiles?id=eq.${user.id}&select=id,role,client_id,full_name,custom_role:roles(permissions)`)
     if (!me) throw new HttpError(403, 'No Work Hub profile for this login.')
     db.me = me
     return db
@@ -91,6 +98,10 @@ class Db {
 
   get isStaff() { return this.me.role === 'admin' || this.me.role === 'staff' }
   get isAdmin() { return this.me.role === 'admin' }
+  /** Admins can do everything; staff what their custom role allows (migration 013). */
+  can(permission: 'finance' | 'hr' | 'websites' | 'announcements') {
+    return this.isAdmin || (this.me.role === 'staff' && !!this.me.custom_role?.permissions.includes(permission))
+  }
 
   private headers(extra: Record<string, string> = {}) {
     return { apikey: this.env.SUPABASE_ANON_KEY, Authorization: `Bearer ${this.token}`, ...extra }
@@ -218,7 +229,7 @@ async function scan(db: Db, env: Env, siteId: string, opts: { page?: string; mod
   if (update.length) await db.post(upsert, update, 'resolution=merge-duplicates,return=minimal')
   const gone = existing.filter((f) => !found.has(`${f.page}\u0000${f.key}`)).map((f) => f.id)
   if (gone.length) await db.del(`site_fields?id=in.(${gone.join(',')})`)
-  if (db.isAdmin) await db.patch(`sites?id=eq.${site.id}`, { last_scanned_at: new Date().toISOString() })
+  if (db.can('websites')) await db.patch(`sites?id=eq.${site.id}`, { last_scanned_at: new Date().toISOString() })
   return { pages: pages.length, fields: total, removed: gone.length }
 }
 
@@ -226,7 +237,7 @@ async function scan(db: Db, env: Env, siteId: string, opts: { page?: string; mod
 // /api/cms/automark — mark headings, text, photos and buttons on one page (admin only)
 // ---------------------------------------------------------------------------
 async function automark(db: Db, env: Env, siteId: string, page: string) {
-  if (!db.isAdmin) throw new HttpError(403, 'Only admins can change website code.')
+  if (!db.can('websites')) throw new HttpError(403, 'Only admins (or the web team) can change website code.')
   if (!/^[\w./-]+\.html?$/i.test(page) || page.includes('..')) throw new HttpError(400, 'Which page?')
   const site = await db.site(siteId)
   requireEditable(site)
@@ -424,7 +435,7 @@ async function cfDeploy(db: Db, env: Env, site: Site, opts: {
 interface UploadFile { hash: string; base64: string; content_type: string }
 
 async function cfSiteForAdmin(db: Db, env: Env, siteId: string) {
-  if (!db.isAdmin) throw new HttpError(403, 'Only admins can upload website files.')
+  if (!db.can('websites')) throw new HttpError(403, 'Only admins (or the web team) can upload website files.')
   const site = await db.site(siteId)
   return { site, cf: pagesFor(site, env) }
 }
@@ -480,4 +491,62 @@ async function cfDeployFresh(db: Db, env: Env, siteId: string) {
   const edited = [...new Set(fields.filter((f) => f.value !== f.base_value).map((f) => f.page))]
   const deployment = await cfDeploy(db, env, site, { fresh: true, pages: edited })
   return { deployment, kept_edits_on: edited, remarked_pages: remarked, ...result }
+}
+
+// ---------------------------------------------------------------------------
+// People: invite, login status, block / unblock, send a login link (admins only)
+// ---------------------------------------------------------------------------
+const UUID = /^[0-9a-f-]{36}$/i
+
+function adminOnly(db: Db) {
+  if (!db.isAdmin) throw new HttpError(403, 'Only admins can manage people.')
+}
+
+async function usersList(db: Db, env: Env) {
+  adminOnly(db)
+  const users = new UserAdmin(env)
+  if (!users.ready) return { ready: false, users: [] }
+  return { ready: true, users: await users.list() }
+}
+
+async function usersInvite(db: Db, env: Env, request: Request, body: Record<string, unknown>) {
+  adminOnly(db)
+  const email = String(body.email ?? '').trim().toLowerCase()
+  const fullName = String(body.full_name ?? '').trim()
+  const role = String(body.role ?? '')
+  const clientId = body.client_id ? String(body.client_id) : null
+  const roleId = body.role_id ? String(body.role_id) : null
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new HttpError(400, 'Please enter a valid email address.')
+  if (!fullName) throw new HttpError(400, 'Please enter their name.')
+  if (!['admin', 'staff', 'client'].includes(role)) throw new HttpError(400, 'Choose a role.')
+  if (role === 'client' && (!clientId || !UUID.test(clientId))) throw new HttpError(400, 'Choose which company this client belongs to.')
+  if (roleId && !UUID.test(roleId)) throw new HttpError(400, 'Unknown custom role.')
+
+  // The invite link brings them back to this Work Hub, where they set a password.
+  const user = await new UserAdmin(env).invite(email, fullName, `${new URL(request.url).origin}/`)
+    .catch((e) => { throw new HttpError(400, e instanceof Error ? e.message : 'Invite failed') })
+  // Their profile is created automatically; set the role with YOUR login (the normal admin rules apply).
+  await db.patch(`profiles?id=eq.${user.id}`, {
+    full_name: fullName, role,
+    client_id: role === 'client' ? clientId : null,
+    role_id: role === 'staff' ? roleId : null,
+  })
+  return { id: user.id }
+}
+
+async function usersAccess(db: Db, env: Env, userId: string, blocked: boolean) {
+  adminOnly(db)
+  if (!UUID.test(userId)) throw new HttpError(400, 'Who?')
+  if (userId === db.me.id) throw new HttpError(400, 'You can’t remove your own access.')
+  await new UserAdmin(env).setBlocked(userId, blocked).catch((e) => { throw new HttpError(400, e instanceof Error ? e.message : 'Failed') })
+  return { blocked }
+}
+
+async function usersLink(db: Db, env: Env, request: Request, userId: string) {
+  adminOnly(db)
+  if (!UUID.test(userId)) throw new HttpError(400, 'Who?')
+  const [p] = await db.get<{ email: string | null }>(`profiles?id=eq.${userId}&select=email`)
+  if (!p?.email) throw new HttpError(404, 'That person has no email address.')
+  await new UserAdmin(env).sendLoginLink(p.email, `${new URL(request.url).origin}/`).catch((e) => { throw new HttpError(400, e instanceof Error ? e.message : 'Failed') })
+  return { sent: p.email }
 }

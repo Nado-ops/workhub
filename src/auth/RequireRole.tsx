@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
-import { useAuth } from './AuthProvider'
-import type { Role } from '../lib/types'
+import { canDo, useAuth } from './AuthProvider'
+import type { Permission, Role } from '../lib/types'
 
 /**
  * Wrap a page with this to say which roles may open it.
@@ -9,7 +9,7 @@ import type { Role } from '../lib/types'
  * Security in the database, so nobody can read data they shouldn't
  * even if they type a URL by hand.
  */
-export function RequireRole({ roles, children }: { roles: Role[]; children: ReactNode }) {
+export function RequireRole({ roles, perm, children }: { roles: Role[]; perm?: Permission; children: ReactNode }) {
   const { session, profile, loading } = useAuth()
   const location = useLocation()
 
@@ -26,6 +26,7 @@ export function RequireRole({ roles, children }: { roles: Role[]; children: Reac
     )
   }
   if (!roles.includes(profile.role)) return <Navigate to="/" replace />
+  if (perm && !canDo(profile, perm)) return <Navigate to="/" replace />
   return <>{children}</>
 }
 

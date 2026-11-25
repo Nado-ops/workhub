@@ -51,6 +51,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 10. `010_website_cms.sql` — website CMS: client websites, editable fields, changes and requests, `site-images` bucket
 11. `011_cloudflare_pages_sites.sql` — website CMS for Cloudflare Pages sites without GitHub (direct upload): `site_files`, `site-files` bucket
 12. `012_clear_logs.sql` — admins can clear the activity log, email log and notifications (Activity log → Clear logs)
+13. `013_custom_roles.sql` — custom roles for staff (Finance, Manager, Web team…) with real database permissions
 
 Then make yourself admin:
 
@@ -193,3 +194,21 @@ Rich text only keeps simple formatting (bold, italic, lists, links) — scripts 
 ### Testing the server part locally (optional)
 Create `.dev.vars` (never commit it) with `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `GITHUB_TOKEN`, run `npm run build`,
 then `npx wrangler dev`. `npm run check:worker` type-checks the server code.
+
+## Team: adding people and roles
+
+**Add a person** on Team & settings: name, email and role (admin, staff, or client + company; staff can also get a
+custom role). They get an email with a link to set their password. You can also **Send login link** (for a lost
+password or an invite that expired) and **Remove access** (blocks the login; their history stays) / **Give access back**.
+
+One-time setup: Cloudflare → Workers & Pages → `workhub` → Settings → Variables and secrets → **Add** (type **Secret**):
+- `SUPABASE_SERVICE_ROLE_KEY` — Supabase → Project Settings → API keys → the **service_role** (secret) key.
+  This key can do anything in your database: only ever paste it into Cloudflare, never into chat, code or the browser.
+
+Invite emails are sent by Supabase itself. Its built-in sender only allows a few emails per hour, so set up your own
+sender: Supabase → Authentication → Emails → **SMTP Settings** → use Resend (host `smtp.resend.com`, port `465`,
+user `resend`, password = your Resend API key, sender e.g. `Work Hub <hello@mail.nanobridgeedu.org>`).
+
+**Roles:** every staff member sees tickets, clients, projects, the CRM, tasks and their own HR. A custom role adds:
+Finance (quotes, invoices, claims, vendors, money reports), HR (everyone's leave, timesheets, HR documents),
+Websites (connect and manage client websites) and/or Announcements. Create and change roles under **Roles**.

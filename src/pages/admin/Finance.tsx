@@ -12,7 +12,7 @@ type DocRow = Doc & { client: { name: string } | null }
 type ClaimRow = Claim & { person: { full_name: string } | null; client: { name: string } | null }
 type Tab = 'invoice' | 'quote' | 'claims'
 
-/** Finance (admin only): quotes, invoices and staff claims. */
+/** Finance (admins + the "finance" power, migration 013): quotes, invoices and staff claims. */
 export default function Finance() {
   const [docs, setDocs] = useState<DocRow[]>([])
   const [totals, setTotals] = useState<Record<string, DocTotals>>({})
@@ -81,7 +81,7 @@ export default function Finance() {
       <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
           <h1 className="text-2xl font-semibold">Finance</h1>
-          <p className="mt-1 text-sm text-muted">Quotes, invoices and staff claims. Only admins can see this page.</p>
+          <p className="mt-1 text-sm text-muted">Quotes, invoices and staff claims. Only admins and people with the Finance power see this page.</p>
         </div>
         <div className="flex gap-2">
           <button className="btn-ghost" onClick={() => setBuilder({ kind: 'quote' })}>+ New quote</button>

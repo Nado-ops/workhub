@@ -12,7 +12,18 @@ export interface Profile {
   job_title: string | null
   role: Role
   client_id: string | null
+  role_id?: string | null
+  custom_role?: { name: string; permissions: Permission[] } | null // a custom role on top of "staff" (migration 013)
 }
+
+// Extra powers a custom role can give a staff member (admins have them all).
+export type Permission = 'finance' | 'hr' | 'websites' | 'announcements'
+export const PERMISSIONS: { key: Permission; label: string; hint: string }[] = [
+  { key: 'finance', label: 'Finance', hint: 'Quotes, invoices, claims, vendors and money reports' },
+  { key: 'hr', label: 'HR', hint: 'Everyone’s leave, timesheets and HR documents; approvals' },
+  { key: 'websites', label: 'Websites', hint: 'Connect client websites, settings, uploads, auto-mark' },
+  { key: 'announcements', label: 'Announcements', hint: 'Post team news' },
+]
 
 export interface Client {
   id: string

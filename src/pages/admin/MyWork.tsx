@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../auth/AuthProvider'
+import { useAuth, useCan } from '../../auth/AuthProvider'
 import { shortDate, slaClock, ticketRef, todayISO, timeAgo } from '../../lib/format'
 import type { Ticket } from '../../lib/types'
 import { TASK_SELECT, TaskCard, TaskForm, type Task } from './Tasks'
@@ -13,7 +13,8 @@ interface Announcement { id: string; title: string; body: string | null; pinned:
 /** Everything one person needs to do, in one place: tasks, tickets, CRM follow-ups and approvals. */
 export default function MyWork() {
   const { profile } = useAuth()
-  const isAdmin = profile?.role === 'admin'
+  const can = useCan()
+  const isAdmin = can('hr') || can('finance') // anyone who approves leave or claims
   const [tasks, setTasks] = useState<Task[]>([])
   const [tickets, setTickets] = useState<TicketRow[]>([])
   const [steps, setSteps] = useState<DealStep[]>([])
@@ -38,8 +39,8 @@ export default function MyWork() {
       .then(({ data }) => setNews(((data as Announcement[] | null) ?? [])[0] ?? null))
     if (isAdmin) {
       const [l, c] = await Promise.all([
-        supabase.from('leave_requests').select('id', { count: 'exact', head: true }).eq('status', 'waiting'),
-        supabase.from('claims').select('id', { count: 'exact', head: true }).eq('status', 'waiting'),
+        can('hr') ? supabase.from('leave_requests').select('id', { count: 'exact', head: true }).eq('status', 'waiting') : Promise.resolve({ count: 0 }),
+        can('finance') ? supabase.from('claims').select('id', { count: 'exact', head: true }).eq('status', 'waiting') : Promise.resolve({ count: 0 }),
       ])
       setApprovals({ leave: l.count ?? 0, claims: c.count ?? 0 })
     }

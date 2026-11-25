@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../auth/AuthProvider'
+import { canDo, useAuth } from '../../auth/AuthProvider'
 import { rand, shortDate, timeAgo, todayISO } from '../../lib/format'
 import Tabs from '../../components/Tabs'
 
@@ -225,7 +225,7 @@ function DealPanel({ deal, onChange, onClose }: { deal: Deal; onChange: () => vo
 /** Shows when a deal is won: turn it into a client (and a draft quote, for admins). */
 function ConvertBar({ deal, onDone }: { deal: Deal; onDone: () => void }) {
   const { profile } = useAuth()
-  const isAdmin = profile?.role === 'admin'
+  const isAdmin = canDo(profile, 'finance') // only people who can see Finance get a draft quote
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<{ quote: boolean } | null>(null)
   const [error, setError] = useState<string | null>(null)

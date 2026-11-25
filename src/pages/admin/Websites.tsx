@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../auth/AuthProvider'
+import { canDo, useAuth } from '../../auth/AuthProvider'
 import { timeAgo } from '../../lib/format'
 import { CHANGE_STATUS, cmsApi, isEditable, pageName, uploadPreview, type Site, type SiteChange, type SiteField } from '../../lib/cms'
 import FieldEditor, { ValueView } from '../../components/cms/FieldEditor'
@@ -18,7 +18,7 @@ const KIND_LABEL: Record<Site['kind'], string> = {
  */
 export default function Websites() {
   const { profile } = useAuth()
-  const isAdmin = profile?.role === 'admin'
+  const isAdmin = canDo(profile, 'websites') // admins, and staff whose role includes websites
   const [sites, setSites] = useState<Site[]>([])
   const [pendingBySite, setPendingBySite] = useState<Record<string, number>>({})
   const [selected, setSelected] = useState<string | 'new' | null>(null)
