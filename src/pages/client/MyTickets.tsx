@@ -59,8 +59,8 @@ export default function MyTickets() {
       </div>
 
       {sent && (
-        <p role="status" className="card border-[#1F5A53] bg-[#123330] p-4 text-sm">
-          <b className="text-accent">✓ Ticket {sent} received.</b> We'll be in touch soon.
+        <p role="status" className="card border-success/30 bg-success-soft p-4 text-sm">
+          <b className="text-accent-text">✓ Ticket {sent} received.</b> We'll be in touch soon.
         </p>
       )}
 
@@ -79,7 +79,7 @@ export default function MyTickets() {
                   key={value}
                   aria-pressed={priority === value}
                   onClick={() => setPriority(value)}
-                  className={`min-h-14 flex-[1_1_140px] cursor-pointer rounded-xl border px-3 py-2 text-left ${priority === value ? 'border-accent bg-[#123330]' : 'border-line-2 bg-well'}`}
+                  className={`min-h-14 flex-[1_1_140px] cursor-pointer rounded-xl border px-3 py-2 text-left ${priority === value ? 'border-accent bg-success-soft' : 'border-line-2 bg-well'}`}
                 >
                   <span className="block text-sm font-semibold">{name}</span>
                   <span className="block text-xs text-muted">{hint}</span>
@@ -90,7 +90,7 @@ export default function MyTickets() {
           <label className="label">Tell us more
             <textarea className="input h-28 py-2" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What happened, on which page, and what you expected to see." />
           </label>
-          <label className="btn h-10 w-fit cursor-pointer border border-dashed border-[#3A5256] font-normal text-soft">
+          <label className="btn h-10 w-fit cursor-pointer border border-dashed border-line-2 font-normal text-soft">
             + Attach screenshots or PDFs
             <input type="file" accept={ACCEPT} multiple className="sr-only" onChange={(e) => setFiles(Array.from(e.target.files ?? []))} />
           </label>
@@ -103,7 +103,7 @@ export default function MyTickets() {
           <h2 className="px-5 pt-5 pb-2 text-lg font-semibold">Your tickets</h2>
           {tickets.length === 0 && <p className="px-5 pb-5 text-sm text-muted">No tickets yet.</p>}
           {tickets.map((t) => (
-            <Link key={t.id} to={`/portal/tickets/${t.id}`} className="flex items-start justify-between gap-3 border-t border-line px-5 py-4 no-underline text-text hover:bg-[#13282A]">
+            <Link key={t.id} to={`/portal/tickets/${t.id}`} className="flex items-start justify-between gap-3 border-t border-line px-5 py-4 no-underline text-text hover:bg-hover">
               <span className="min-w-0">
                 <span className="block font-medium">{t.title}</span>
                 <span className="text-xs text-muted">{ticketRef(t.id)} · opened {timeAgo(t.created_at)}</span>

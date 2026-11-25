@@ -17,7 +17,7 @@ export default function Tabs<T extends string>({
           className={`-mb-px h-11 cursor-pointer border-b-2 px-3 text-sm ${value === t.key ? 'border-accent font-semibold text-text' : 'border-transparent text-muted'}`}
         >
           {t.label}
-          {t.count !== undefined && <span className="ml-1.5 rounded-md bg-[#1A2B2E] px-1.5 py-0.5 text-[11px] text-soft">{t.count}</span>}
+          {t.count !== undefined && <span className="ml-1.5 rounded-md bg-raised px-1.5 py-0.5 text-[11px] text-soft">{t.count}</span>}
         </button>
       ))}
     </div>

@@ -26,7 +26,7 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center p-6">
+    <div className="theme-dark grid min-h-screen place-items-center p-6">
       <form onSubmit={handleSubmit} className="card w-full max-w-sm p-8 flex flex-col gap-5">
         <h1 className="text-lg font-semibold">Choose a new password</h1>
         <label className="label">

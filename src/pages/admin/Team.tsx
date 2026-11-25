@@ -46,7 +46,7 @@ export default function Team() {
       </div>
 
       {error && <p className="text-sm text-danger">{error}</p>}
-      {saved && <p role="status" className="text-sm text-accent">Saved {saved}.</p>}
+      {saved && <p role="status" className="text-sm text-accent-text">Saved {saved}.</p>}
 
       <section className="card overflow-x-auto">
         <table className="w-full min-w-[780px] border-collapse">

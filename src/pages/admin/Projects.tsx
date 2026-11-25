@@ -83,18 +83,18 @@ function ProjectCard({ p, onOpen }: { p: Row; onOpen: () => void }) {
   const waitingExtras = p.extras.filter((e) => e.status === 'waiting').length
   const soon = p.status === 'active' && p.due_date && p.due_date <= todayISO(7)
   return (
-    <button onClick={onOpen} className="card flex cursor-pointer flex-col gap-3.5 p-4 text-left hover:border-[#2A4A47]">
+    <button onClick={onOpen} className="card flex cursor-pointer flex-col gap-3.5 p-4 text-left hover:border-line-2">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-xs text-muted">{p.client?.name ?? 'Internal'}</p>
           <p className="mt-0.5 font-semibold">{p.name}</p>
         </div>
-        {p.type && <span className="pill shrink-0 bg-[#2A2440] text-[#C4B5FF]">{p.type}</span>}
+        {p.type && <span className="pill shrink-0 bg-violet-soft text-violet">{p.type}</span>}
       </div>
       <div>
         <div className="flex justify-between text-xs text-soft"><span>{PHASE_LABEL[p.phase]} phase</span><span>{p.progress}%</span></div>
-        <div className="mt-1.5 h-1.5 rounded bg-[#1A292C]">
-          <div className={`h-1.5 rounded ${p.status === 'on_hold' ? 'bg-[#6E8487]' : 'bg-accent'}`} style={{ width: `${p.progress}%` }} />
+        <div className="mt-1.5 h-1.5 rounded bg-raised">
+          <div className={`h-1.5 rounded ${p.status === 'on_hold' ? 'bg-line-2' : 'bg-accent'}`} style={{ width: `${p.progress}%` }} />
         </div>
       </div>
       <PhaseSteps phase={p.phase} done={p.status === 'done'} />
@@ -105,8 +105,8 @@ function ProjectCard({ p, onOpen }: { p: Row; onOpen: () => void }) {
           {approvedExtras > 0 && ' incl. extras'}
         </span>
       </div>
-      {p.waiting_on_client && <p className="rounded-lg bg-[#162235] px-2.5 py-2 text-xs text-info">Waiting on client approval</p>}
-      {waitingExtras > 0 && <p className="rounded-lg bg-[#3A2A10] px-2.5 py-2 text-xs text-warn">{waitingExtras} extra waiting for the client's answer</p>}
+      {p.waiting_on_client && <p className="rounded-lg bg-info-soft px-2.5 py-2 text-xs text-info">Waiting on client approval</p>}
+      {waitingExtras > 0 && <p className="rounded-lg bg-warn-soft px-2.5 py-2 text-xs text-warn">{waitingExtras} extra waiting for the client's answer</p>}
     </button>
   )
 }
@@ -198,7 +198,7 @@ function ProjectEditor({
           <input className="input" type="date" value={f.due_date} onChange={(e) => set('due_date', e.target.value)} />
         </label>
         <label className="flex basis-full items-center gap-2.5 text-sm text-soft">
-          <input type="checkbox" className="h-4 w-4 accent-[#D4AF6A]" checked={f.waiting_on_client} onChange={(e) => set('waiting_on_client', e.target.checked)} />
+          <input type="checkbox" className="h-4 w-4 accent-[#B8893A]" checked={f.waiting_on_client} onChange={(e) => set('waiting_on_client', e.target.checked)} />
           Waiting on the client (e.g. for a design approval)
         </label>
         <button className="btn-primary" disabled={busy}>{project ? 'Save changes' : 'Create project'}</button>
@@ -227,7 +227,7 @@ function ExtrasEditor({ project, onChange }: { project: Row; onChange: () => voi
     onChange()
   }
 
-  const tone = { waiting: 'bg-[#3A2A10] text-warn', approved: 'bg-[#123330] text-accent', declined: 'bg-[#16282B] text-muted' }
+  const tone = { waiting: 'bg-warn-soft text-warn', approved: 'bg-success-soft text-success', declined: 'bg-raised text-muted' }
   const label = { waiting: 'Waiting for client', approved: 'Approved', declined: 'Declined' }
 
   return (

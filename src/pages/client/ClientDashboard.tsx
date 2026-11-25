@@ -31,7 +31,7 @@ export default function ClientDashboard() {
         <h1 className="text-3xl font-semibold">{greeting}{first ? `, ${first}` : ''}</h1>
         <p className="mt-1 text-sm text-muted">
           {tickets.length === 0 ? 'You have no open tickets.' : `${tickets.length} open ${tickets.length === 1 ? 'ticket' : 'tickets'}.`}
-          {' '}Need help? <Link to="/portal/tickets" className="text-accent">Raise a ticket</Link>.
+          {' '}Need help? <Link to="/portal/tickets" className="text-accent-text">Raise a ticket</Link>.
         </p>
       </div>
 
@@ -45,7 +45,7 @@ export default function ClientDashboard() {
                 <span className="font-medium">{p.name}</span>
                 <span className="text-muted capitalize">{p.phase} phase · {p.progress}%</span>
               </div>
-              <div className="mt-2 h-2 rounded bg-[#1A292C]"><div className="h-2 rounded bg-accent" style={{ width: `${p.progress}%` }} /></div>
+              <div className="mt-2 h-2 rounded bg-raised"><div className="h-2 rounded bg-accent" style={{ width: `${p.progress}%` }} /></div>
               {p.due_date && <p className="mt-1.5 text-xs text-muted">Due {new Date(p.due_date).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })}</p>}
             </div>
           ))}

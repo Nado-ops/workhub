@@ -72,12 +72,12 @@ export default function Study() {
 
   const Item = ({ r }: { r: Reminder }) => (
     <div className="flex items-center gap-3 border-t border-line py-3">
-      <input type="checkbox" checked={r.done} onChange={() => toggle(r)} aria-label={`Done: ${r.title}`} className="h-5 w-5 shrink-0 accent-[#D4AF6A]" />
+      <input type="checkbox" checked={r.done} onChange={() => toggle(r)} aria-label={`Done: ${r.title}`} className="h-5 w-5 shrink-0 accent-[#B8893A]" />
       <div className="min-w-0 flex-1">
         <p className={`text-sm font-medium ${r.done ? 'text-muted line-through' : ''}`}>{r.title}</p>
         <p className="text-xs text-muted">{r.goal}{r.minutes ? ` · ${r.minutes} min` : ''}</p>
       </div>
-      {r.remind_at && <span className="text-xs font-semibold text-[#7FE6D3]">{localDay(r.remind_at) === today ? timeOf(r.remind_at) : new Date(r.remind_at).toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' })}</span>}
+      {r.remind_at && <span className="text-xs font-semibold text-accent-text">{localDay(r.remind_at) === today ? timeOf(r.remind_at) : new Date(r.remind_at).toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' })}</span>}
       <button aria-label="Delete reminder" className="cursor-pointer text-xs text-muted hover:text-text" onClick={() => remove(r)}>✕</button>
     </div>
   )
@@ -93,7 +93,7 @@ export default function Study() {
           <span className="text-sm text-soft">Last 7 days</span>
           <span className="flex gap-1.5">
             {weekDays.map((d) => (
-              <span key={d} className={`grid h-6 w-6 place-items-center rounded-full text-[10px] font-semibold ${studied.has(d) ? 'bg-accent text-accent-ink' : 'bg-[#1A292C] text-[#6E8487]'}`}>
+              <span key={d} className={`grid h-6 w-6 place-items-center rounded-full text-[10px] font-semibold ${studied.has(d) ? 'bg-accent text-accent-ink' : 'bg-raised text-muted'}`}>
                 {new Date(d + 'T12:00').toLocaleDateString('en-ZA', { weekday: 'narrow' })}
               </span>
             ))}
@@ -138,7 +138,7 @@ export default function Study() {
           {perGoal.map((g) => (
             <div key={g.g}>
               <div className="flex justify-between text-sm"><span className="font-medium">{g.g}</span><span className="text-xs text-muted">{g.done} of {g.total} sessions</span></div>
-              <div className="mt-2 h-1.5 rounded bg-[#1A292C]"><div className="h-1.5 rounded bg-accent" style={{ width: `${g.total ? Math.round((g.done / g.total) * 100) : 0}%` }} /></div>
+              <div className="mt-2 h-1.5 rounded bg-raised"><div className="h-1.5 rounded bg-accent" style={{ width: `${g.total ? Math.round((g.done / g.total) * 100) : 0}%` }} /></div>
               <p className="mt-1 text-xs text-muted">{Math.round((g.mins / 60) * 10) / 10} h studied</p>
             </div>
           ))}

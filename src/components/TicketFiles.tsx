@@ -29,7 +29,7 @@ export default function TicketFiles({ ticketId }: { ticketId: number }) {
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
         <p className="text-[11px] tracking-widest text-muted">ATTACHMENTS</p>
-        <label className="btn h-8 cursor-pointer border border-dashed border-[#3A5256] px-3 text-xs font-normal text-soft">
+        <label className="btn h-8 cursor-pointer border border-dashed border-line-2 px-3 text-xs font-normal text-soft">
           {busy ? 'Uploading…' : '+ Add screenshot or PDF'}
           <input type="file" accept={ACCEPT} multiple className="sr-only" disabled={busy} onChange={(e) => { add(e.target.files); e.target.value = '' }} />
         </label>
@@ -38,7 +38,7 @@ export default function TicketFiles({ ticketId }: { ticketId: number }) {
       {files.map((f) => (
         <button key={f.path} onClick={() => openFile('ticket-files', f.path)} className="flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-line bg-well px-3 py-2 text-left text-sm text-soft hover:text-text">
           <span className="truncate">{displayName(f.path)}</span>
-          <span className="shrink-0 text-xs text-accent">Open</span>
+          <span className="shrink-0 text-xs text-accent-text">Open</span>
         </button>
       ))}
       {error && <p className="text-xs text-danger">{error}</p>}

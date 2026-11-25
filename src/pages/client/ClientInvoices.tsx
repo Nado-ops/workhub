@@ -62,7 +62,7 @@ export default function ClientInvoices() {
         {open === d.id && (
           <div className="mx-5 mb-4 rounded-xl bg-[#F4F7F6] p-4 text-sm text-[#14201F]">
             {lines.map((l) => (
-              <div key={l.id} className="flex justify-between gap-3 py-0.5"><span>{l.description} <span className="text-[#4E6366]">× {l.qty}</span></span><b>{rand(Number(l.qty) * Number(l.unit_price))}</b></div>
+              <div key={l.id} className="flex justify-between gap-3 py-0.5"><span>{l.description} <span className="text-muted">× {l.qty}</span></span><b>{rand(Number(l.qty) * Number(l.unit_price))}</b></div>
             ))}
             <div className="mt-2 grid gap-0.5 border-t border-[#DDE5E4] pt-2">
               <div className="flex justify-between"><span>Subtotal</span><span>{rand(Number(totals[d.id]?.subtotal ?? 0))}</span></div>
@@ -85,10 +85,10 @@ export default function ClientInvoices() {
         <p className="mt-1 text-sm text-muted">Everything we send you lands here. Tap one to see the details.</p>
       </div>
       {error && <p className="text-sm text-danger">{error}</p>}
-      {thanks && <p role="status" className="card border-[#1F5A53] bg-[#123330] p-4 text-sm text-accent">{thanks}</p>}
+      {thanks && <p role="status" className="card border-success/30 bg-success-soft p-4 text-sm text-accent-text">{thanks}</p>}
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
-        <div className={`card p-4 ${overdue.length ? 'border-[#4A2326] bg-[#1F1213]' : ''}`}>
+        <div className={`card p-4 ${overdue.length ? 'border-danger/30 bg-danger-soft' : ''}`}>
           <p className="text-sm text-muted">To pay</p>
           <p className="mt-1.5 text-2xl font-semibold">{rand(toPay.reduce((s, d) => s + total(d.id), 0))}</p>
           <p className="mt-1 text-xs text-soft">{overdue.length ? `${overdue.length} overdue` : toPay.length ? `${toPay.length} invoice(s)` : 'All paid up'}</p>

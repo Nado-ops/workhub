@@ -76,16 +76,16 @@ export default function Tickets() {
           {atRisk === 0 ? 'Nothing is close to its deadline' : `${atRisk} ${atRisk === 1 ? 'ticket is' : 'tickets are'} late or due within 4 hours`}
         </p>
         <div className="mt-3 mb-2.5 flex h-2 gap-1">
-          {([['breach', '#FF7A7A'], ['soon', '#F5A05B'], ['today', '#E8D77A'], ['later', '#6FCF97'], ['paused', '#33464A']] as const).map(([k, c]) =>
+          {([['breach', '#C0362C'], ['soon', '#C2620A'], ['today', '#CA8A04'], ['later', '#1F7A4D'], ['paused', '#CBD3DE']] as const).map(([k, c]) =>
             counts[k] > 0 ? <div key={k} className="rounded" style={{ flex: counts[k], background: c, minWidth: 12 }} /> : null,
           )}
-          {withClock.length === 0 && <div className="flex-1 rounded bg-[#1A292C]" />}
+          {withClock.length === 0 && <div className="flex-1 rounded bg-raised" />}
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-soft">
-          <span><span className="text-[#FF7A7A]">●</span> Late <b>{counts.breach}</b></span>
+          <span><span className="text-danger">●</span> Late <b>{counts.breach}</b></span>
           <span><span className="text-warn">●</span> Under 4 h <b>{counts.soon}</b></span>
-          <span><span className="text-[#E8D77A]">●</span> Today <b>{counts.today}</b></span>
-          <span><span className="text-[#6FCF97]">●</span> Later <b>{counts.later}</b></span>
+          <span><span className="text-[#A16207]">●</span> Today <b>{counts.today}</b></span>
+          <span><span className="text-success">●</span> Later <b>{counts.later}</b></span>
           <span><span className="text-muted">●</span> Paused <b>{counts.paused}</b></span>
         </div>
       </section>
@@ -100,7 +100,7 @@ export default function Tickets() {
               onClick={() => setTab(k)}
               className={`-mb-px h-11 cursor-pointer border-b-2 px-3 text-sm ${tab === k ? 'border-accent font-semibold text-text' : 'border-transparent text-muted'}`}
             >
-              {name} <span className="ml-1 rounded-md bg-[#1A2B2E] px-1.5 py-0.5 text-[11px] text-soft">{n}</span>
+              {name} <span className="ml-1 rounded-md bg-raised px-1.5 py-0.5 text-[11px] text-soft">{n}</span>
             </button>
           ))}
         </div>
@@ -121,9 +121,9 @@ export default function Tickets() {
               </thead>
               <tbody>
                 {filtered.map((r) => (
-                  <tr key={r.id} className="hover:bg-[#13282A]">
+                  <tr key={r.id} className="hover:bg-hover">
                     <td className="td">
-                      <Link to={`/app/tickets/${r.id}`} className="font-medium text-text no-underline hover:text-accent">{r.title}</Link>
+                      <Link to={`/app/tickets/${r.id}`} className="font-medium text-text no-underline hover:text-accent-text">{r.title}</Link>
                       <p className="mt-0.5 text-xs text-muted">{ticketRef(r.id)} · opened {timeAgo(r.created_at)}</p>
                     </td>
                     <td className="td text-soft">{r.client?.name ?? '—'}</td>

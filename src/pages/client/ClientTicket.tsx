@@ -39,7 +39,7 @@ export default function ClientTicket() {
   return (
     <div className="flex flex-col gap-4">
       <div className="pt-2">
-        <Link to="/portal/tickets" className="text-sm text-accent no-underline">‹ My tickets</Link>
+        <Link to="/portal/tickets" className="text-sm text-accent-text no-underline">‹ My tickets</Link>
         <div className="mt-2 flex flex-wrap items-center gap-2.5">
           <h1 className="text-2xl font-semibold">{ticket.title}</h1>
           <span className={`pill ${STATUS_STYLE[ticket.status]}`}>● {CLIENT_STATUS_LABEL[ticket.status]}</span>
@@ -54,10 +54,10 @@ export default function ClientTicket() {
         {messages.map((m) => (
           <article key={m.id} className="border-b border-line p-5">
             <p className="text-sm"><b>{m.author?.full_name || 'Someone'}</b> <span className="text-xs text-muted">· {timeAgo(m.created_at)}</span></p>
-            <p className="mt-2 whitespace-pre-line text-sm text-[#D6E1E2]">{m.body}</p>
+            <p className="mt-2 whitespace-pre-line text-sm text-soft">{m.body}</p>
           </article>
         ))}
-        <div className="bg-[#0C1719] p-5">
+        <div className="bg-raised p-5">
           <textarea aria-label="Your reply" rows={3} className="input h-auto py-2.5" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a reply…" />
           <div className="mt-2.5 flex justify-end"><button className="btn-primary" disabled={!draft.trim()} onClick={send}>Send reply</button></div>
         </div>
