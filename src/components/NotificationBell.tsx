@@ -55,6 +55,11 @@ export default function NotificationBell() {
     if (n.link) navigate(n.link)
     load()
   }
+  async function clearAll() {
+    if (!window.confirm('Remove all your notifications?')) return
+    await supabase.from('notifications').delete().not('id', 'is', null) // the database only lets you delete your own
+    load()
+  }
   async function readAll() {
     await supabase.from('notifications').update({ read_at: new Date().toISOString() }).is('read_at', null)
     load()
@@ -83,7 +88,10 @@ export default function NotificationBell() {
         <div className="absolute top-11 right-0 z-50 w-[min(340px,calc(100vw-40px))] overflow-hidden theme-light rounded-2xl border border-line bg-panel shadow-xl md:right-auto md:left-0">
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <p className="text-sm font-semibold">Notifications</p>
-            {unread > 0 && <button className="text-xs text-accent-text hover:underline" onClick={readAll}>Mark all read</button>}
+            <span className="flex gap-3">
+              {unread > 0 && <button className="text-xs text-accent-text hover:underline" onClick={readAll}>Mark all read</button>}
+              {notes.length > 0 && <button className="text-xs text-muted hover:text-danger" onClick={clearAll}>Clear all</button>}
+            </span>
           </div>
           <ul className="max-h-[60vh] overflow-y-auto">
             {notes.length === 0 && <li className="px-4 py-6 text-center text-sm text-muted">You're all caught up.</li>}

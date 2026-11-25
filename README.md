@@ -50,6 +50,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 9. `009_reports_calendar_audit.sql` — business details, monthly client reports (+ email on the 1st), shared calendar, audit log, notification emails
 10. `010_website_cms.sql` — website CMS: client websites, editable fields, changes and requests, `site-images` bucket
 11. `011_cloudflare_pages_sites.sql` — website CMS for Cloudflare Pages sites without GitHub (direct upload): `site_files`, `site-files` bucket
+12. `012_clear_logs.sql` — admins can clear the activity log, email log and notifications (Activity log → Clear logs)
 
 Then make yourself admin:
 
