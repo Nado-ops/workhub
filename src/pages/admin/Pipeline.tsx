@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase'
 import { canDo, useAuth } from '../../auth/AuthProvider'
 import { rand, shortDate, timeAgo, todayISO } from '../../lib/format'
 import Tabs from '../../components/Tabs'
+import LeadForms from '../../components/LeadForms'
 
 type Stage = 'lead' | 'contacted' | 'proposal_sent' | 'negotiation' | 'won' | 'lost'
 type Source = 'referral' | 'website' | 'social_media' | 'cold_outreach' | 'event' | 'existing_client' | 'other'
@@ -41,6 +42,7 @@ interface Deal {
   created_at: string
   owner: { full_name: string } | null
   contacts: Contact[]
+  lead_source: { name: string } | null // the website a lead came from (migration 014)
 }
 
 const STAGES: { key: Stage; label: string; colour: string }[] = [
@@ -78,11 +80,13 @@ export default function Pipeline() {
   const [showLost, setShowLost] = useState(false)
   const [sourceFilter, setSourceFilter] = useState<Source | ''>('')
   const [error, setError] = useState<string | null>(null)
+  const [forms, setForms] = useState(false)
+  const { profile } = useAuth()
 
   async function load() {
     const { data, error } = await supabase
       .from('deals')
-      .select('*, owner:profiles(full_name), contacts(*)')
+      .select('*, owner:profiles(full_name), contacts(*), lead_source:lead_sources(name)')
       .order('created_at', { ascending: false })
     if (error) setError(error.message)
     setDeals((data as Deal[] | null) ?? [])
@@ -116,11 +120,13 @@ export default function Pipeline() {
             <option value="">All sources</option>
             {SOURCES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
           </select>
+          {profile?.role === 'admin' && <button className="btn-ghost" onClick={() => setForms((v) => !v)}>Website forms</button>}
           <button className="btn-primary" onClick={() => setOpenId(openId === 'new' ? null : 'new')}>{openId === 'new' ? 'Close' : '+ New deal'}</button>
         </div>
       </div>
       {error && <p className="text-sm text-danger">{error}</p>}
 
+      {forms && <LeadForms onClose={() => { setForms(false); load() }} />}
       {openId === 'new' && <DealForm key="new" deal={null} onSaved={(id) => { load(); setOpenId(id) }} onDeleted={() => {}} />}
       {current && <DealPanel key={current.id} deal={current} onChange={load} onClose={() => { setOpenId(null); load() }} />}
 
@@ -143,8 +149,8 @@ export default function Pipeline() {
                       {d.description && <p className="text-xs text-muted">{d.description}</p>}
                       {main && <p className="text-xs text-soft">👤 {main.full_name}{d.contacts.length > 1 ? ` +${d.contacts.length - 1}` : ''}</p>}
                       <div className="flex items-center justify-between gap-2">
-                        <b>{rand(Number(d.amount))}</b>
-                        <span className="text-[11px] text-muted">{sourceLabel(d.source) ?? d.owner?.full_name?.split(' ')[0] ?? ''}</span>
+                        <b className="whitespace-nowrap">{rand(Number(d.amount))}</b>
+                        <span className="min-w-0 truncate text-[11px] text-muted" title={d.lead_source?.name}>{d.lead_source ? `🌐 ${d.lead_source.name}` : sourceLabel(d.source) ?? d.owner?.full_name?.split(' ')[0] ?? ''}</span>
                       </div>
                       {d.next_step && (
                         <p className={`rounded-lg px-2 py-1.5 text-xs ${due ? 'bg-warn-soft text-warn' : 'bg-raised text-soft'}`}>
@@ -198,7 +204,7 @@ function DealPanel({ deal, onChange, onClose }: { deal: Deal; onChange: () => vo
           <h2 className="text-lg font-semibold">{deal.company}</h2>
           <p className="text-sm text-muted">
             {rand(Number(deal.amount))} · {deal.stage === 'lost' ? 'Lost' : STAGES.find((s) => s.key === deal.stage)?.label}
-            {deal.source ? ` · from ${sourceLabel(deal.source)}` : ''}
+            {deal.lead_source ? ` · from ${deal.lead_source.name}` : deal.source ? ` · from ${sourceLabel(deal.source)}` : ''}
           </p>
         </div>
         <button className="btn-ghost h-9 px-3 text-sm" onClick={onClose}>Close</button>

@@ -13,6 +13,7 @@ import { GitHub, repoPath } from './github'
 import { applyEdits, autoMark, scanFields, KEY_PATTERN, type Edit, type FieldType } from './html'
 import { Pages, cfHash, contentType, isServerCode, SPECIAL_FILES, toBase64 } from './pages'
 import { UserAdmin } from './users'
+import { handleLeads } from './leads'
 
 export interface Env {
   ASSETS: Fetcher
@@ -42,6 +43,8 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request)
+    // Website contact forms: public (no login), protected by form key + website check (worker/leads.ts).
+    if (url.pathname === '/api/leads') return handleLeads(request, env).catch(() => new Response('Something went wrong', { status: 500 }))
     try {
       if (request.method !== 'POST' && url.pathname !== '/api/cms/status') throw new HttpError(405, 'Use POST')
       const db = await Db.forRequest(request, env)

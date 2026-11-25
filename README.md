@@ -52,6 +52,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 11. `011_cloudflare_pages_sites.sql` — website CMS for Cloudflare Pages sites without GitHub (direct upload): `site_files`, `site-files` bucket
 12. `012_clear_logs.sql` — admins can clear the activity log, email log and notifications (Activity log → Clear logs)
 13. `013_custom_roles.sql` — custom roles for staff (Finance, Manager, Web team…) with real database permissions
+14. `014_website_leads.sql` — website contact forms send leads into the CRM pipeline
 
 Then make yourself admin:
 
@@ -212,3 +213,20 @@ user `resend`, password = your Resend API key, sender e.g. `Work Hub <hello@mail
 **Roles:** every staff member sees tickets, clients, projects, the CRM, tasks and their own HR. A custom role adds:
 Finance (quotes, invoices, claims, vendors, money reports), HR (everyone's leave, timesheets, HR documents),
 Websites (connect and manage client websites) and/or Announcements. Create and change roles under **Roles**.
+
+## Website forms → CRM leads
+
+Contact forms on your own websites (e.g. nanotechnology6.co.za) can send each enquiry straight into the CRM pipeline.
+
+1. Run `supabase/migrations/014_website_leads.sql`. Needs the `SUPABASE_SERVICE_ROLE_KEY` Cloudflare secret (see Team).
+2. **CRM pipeline → Website forms → Add a website**: the website address (subdomains like www. are included) and who
+   new leads go to.
+3. **Get form code** and paste it into the website's contact page (or ask your AI builder to use it and style it).
+   Already have a form? Point its `action` at the address shown and name the fields `name`, `email`, `phone`,
+   `company`, `message`. Optional: a hidden `_redirect` field with your own thank-you page.
+
+Each enquiry becomes a **Lead** (source: Website) with the person as a contact and their message in Activity; the owner
+(or all admins) gets a bell notification and an email. The same person writing again within an hour is added to the
+same lead. Protection: each website has its own form key, only that website's domains are accepted, a hidden spam-trap
+field silently drops bots, and at most 30 leads per website per 10 minutes are accepted.
+WordPress / Divi forms can't post here directly yet — use the code above in a Code module, or ask for a plugin.
