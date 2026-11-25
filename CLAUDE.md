@@ -84,5 +84,9 @@ App: `canDo(profile, perm)` / `useCan()` from AuthProvider, `RequireRole perm=�
 - People (Team & settings): invite / block / send login link go through the Worker (`worker/users.ts`, `/api/users/*`)
   using the Cloudflare secret `SUPABASE_SERVICE_ROLE_KEY` — only after checking the caller is an admin with their own
   JWT. The browser never gets that key. "Remove access" = ban (history kept), not delete.
+- Website leads (migration 014): `lead_sources` (domains + public form_key, admin-managed in CRM pipeline → Website forms,
+  `src/components/LeadForms.tsx`), `deals.lead_source_id`. Public endpoint `/api/leads?key=` (`worker/leads.ts`, no login):
+  checks Origin against the key's domains (CORS only for those), honeypot field `website`, then calls `intake_lead()`
+  with the service_role key (function granted to service_role only). Dedup by email within 1 hour; 30 per 10 min.
 - Not built yet: study reminder emails, direct WordPress publishing (WordPress sites use requests).
 - Shared helpers: `src/lib/team.ts` (`useTeam`), `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts` (`useBusiness`), `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.
