@@ -13,12 +13,6 @@ const LINES = [
   { text: 'Progress beats perfect. Ship it, then make it better.', tag: 'Momentum' },
 ]
 
-// Little rising dots: [left %, size px, seconds, delay]
-const SPARKS: [number, number, number, number][] = [
-  [8, 4, 11, 0], [18, 3, 14, 3], [29, 5, 12, 6], [41, 3, 16, 1], [53, 4, 13, 8],
-  [64, 3, 15, 4], [72, 5, 12, 10], [83, 3, 17, 2], [91, 4, 14, 7], [36, 3, 18, 12],
-]
-
 export default function Login() {
   const { session, loading } = useAuth()
   const [email, setEmail] = useState('')
@@ -67,37 +61,30 @@ export default function Login() {
       {/* Left: animated panel */}
       <section
         aria-label="Welcome"
-        className="relative flex min-h-[260px] flex-col justify-between overflow-hidden p-8 md:min-h-screen md:w-[55%] md:p-14"
-        style={{ background: 'linear-gradient(150deg, #0E2A2A 0%, #0A1A1C 55%, #081314 100%)' }}
+        className="relative flex min-h-[300px] flex-col justify-between overflow-hidden p-8 md:min-h-screen md:w-[55%] md:p-14"
+        style={{ background: '#0B1530' }}
       >
-        {/* Soft moving glows */}
-        <div aria-hidden="true" className="orb-a pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full opacity-60 blur-3xl" style={{ background: '#1F7A6C' }} />
-        <div aria-hidden="true" className="orb-b pointer-events-none absolute -bottom-32 right-0 h-[28rem] w-[28rem] rounded-full opacity-40 blur-3xl" style={{ background: '#3FD0B5' }} />
-        <div aria-hidden="true" className="orb-c pointer-events-none absolute left-1/3 top-1/2 h-64 w-64 rounded-full opacity-30 blur-3xl" style={{ background: '#2B5C8A' }} />
-        {/* Faint grid */}
+        {/* Background photo (public/login-bg.webp) with a very slow zoom */}
+        <img
+          src="/login-bg.webp"
+          alt=""
+          aria-hidden="true"
+          className="slow-zoom pointer-events-none absolute inset-0 h-full w-full object-cover object-right"
+        />
+        {/* Darker on the left and bottom so the words stay easy to read */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-[0.07]"
-          style={{ backgroundImage: 'linear-gradient(#E6EEEE 1px, transparent 1px), linear-gradient(90deg, #E6EEEE 1px, transparent 1px)', backgroundSize: '44px 44px' }}
+          className="pointer-events-none absolute inset-0"
+          style={{ background: 'linear-gradient(90deg, rgba(8,14,30,0.78) 0%, rgba(8,14,30,0.45) 45%, rgba(8,14,30,0) 75%), linear-gradient(0deg, rgba(8,14,30,0.65) 0%, rgba(8,14,30,0) 40%)' }}
         />
-        {/* Rising sparks */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-[420px]">
-          {SPARKS.map(([left, size, secs, delay], i) => (
-            <span
-              key={i}
-              className="spark absolute bottom-0 rounded-full bg-[#7FE6D3]"
-              style={{ left: `${left}%`, width: size, height: size, animationDuration: `${secs}s`, animationDelay: `${delay}s` }}
-            />
-          ))}
-        </div>
 
         <div className="relative flex items-center gap-3">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-lg font-bold text-accent-ink">W</span>
           <span className="text-lg font-semibold">Work Hub</span>
         </div>
 
-        <div className="relative max-w-xl py-8 md:py-0">
-          <p className="text-sm text-[#7FE6D3]">{greeting}</p>
+        <div className="relative max-w-[440px] py-8 md:py-0">
+          <p className="text-sm text-[#F5C46A]">{greeting}</p>
           <div key={line} className="quote-in" aria-live="polite">
             <p className="mt-4 text-[11px] font-semibold tracking-[0.2em] text-accent uppercase">{current.tag}</p>
             <p className="mt-2 text-2xl leading-snug font-semibold md:text-4xl md:leading-tight">{current.text}</p>
@@ -109,7 +96,7 @@ export default function Login() {
           </div>
         </div>
 
-        <p className="relative hidden text-xs text-muted md:block">Tickets · Projects · Clients · Finance · HR — all in one place.</p>
+        <p className="relative hidden text-xs text-[#C9D6D7] md:block">Tickets · Projects · Clients · Finance · HR — all in one place.</p>
       </section>
 
       {/* Right: sign-in form */}
