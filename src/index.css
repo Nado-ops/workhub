@@ -55,3 +55,20 @@ body {
 @utility td {
   @apply px-5 py-3 border-t border-line text-sm;
 }
+
+/* ---------- Login page animation ---------- */
+@keyframes drift-a { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(60px, -40px) scale(1.15); } }
+@keyframes drift-b { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-50px, 50px) scale(0.9); } }
+@keyframes drift-c { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, 40px); } }
+@keyframes rise { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: .7; } 100% { transform: translateY(-420px); opacity: 0; } }
+@keyframes quote-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.orb-a { animation: drift-a 18s ease-in-out infinite; }
+.orb-b { animation: drift-b 22s ease-in-out infinite; }
+.orb-c { animation: drift-c 26s ease-in-out infinite; }
+.spark { animation: rise linear infinite both; opacity: 0; }
+.quote-in { animation: quote-in .8s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .orb-a, .orb-b, .orb-c, .spark { animation: none; }
+  .spark { display: none; }
+  .quote-in { animation: none; }
+}

@@ -67,8 +67,13 @@ export function slaClock(dueAt: string | null, status: TicketStatus) {
   return { text: `${Math.round(mins / 1440)} days left`, tone: 'text-soft', risk: 'later' as const }
 }
 
-export const rand = (n: number) =>
-  'R' + n.toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 2 })
+/** 2760.5 → "2 760.50" (space between thousands, dot for cents), the same as the emails. */
+export function amount(n: number) {
+  const whole = Number.isInteger(Math.round(n * 100) / 100)
+  return n.toLocaleString('en-US', { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 }).replace(/,/g, ' ')
+}
+
+export const rand = (n: number) => 'R' + amount(n)
 
 export const PHASES = ['plan', 'design', 'build', 'launch'] as const
 export const PHASE_LABEL: Record<(typeof PHASES)[number], string> = { plan: 'Plan', design: 'Design', build: 'Build', launch: 'Launch' }

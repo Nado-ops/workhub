@@ -17,6 +17,7 @@ import Pipeline from './pages/admin/Pipeline'
 import Reports from './pages/admin/Reports'
 import HR from './pages/admin/HR'
 import Study from './pages/admin/Study'
+import Vendors from './pages/admin/Vendors'
 import ClientDashboard from './pages/client/ClientDashboard'
 import MyTickets from './pages/client/MyTickets'
 import ClientTicket from './pages/client/ClientTicket'
@@ -53,6 +54,7 @@ export default function App() {
             <Route path="hr" element={<HR />} />
             <Route path="finance" element={<RequireRole roles={['admin']}><Finance /></RequireRole>} />
             <Route path="study" element={<RequireRole roles={['admin']}><Study /></RequireRole>} />
+            <Route path="vendors" element={<RequireRole roles={['admin']}><Vendors /></RequireRole>} />
             <Route path="team" element={<RequireRole roles={['admin']}><Team /></RequireRole>} />
           </Route>
 
