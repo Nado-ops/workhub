@@ -114,3 +114,10 @@ body {
   .spark { display: none; }
   .quote-in { animation: none; }
 }
+
+/* Printing / "Save as PDF": A4 page, white, keep the colours, hide the app around it. */
+@media print {
+  @page { size: A4; margin: 0; }
+  html, body { background: #fff !important; }
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

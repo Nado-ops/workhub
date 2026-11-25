@@ -8,6 +8,7 @@ const LINKS = [
   { to: '/portal/tickets', label: 'My tickets' },
   { to: '/portal/projects', label: 'My projects' },
   { to: '/portal/invoices', label: 'Quotes & invoices' },
+  { to: '/portal/report', label: 'Monthly report' },
 ]
 
 /** The client portal shell: a header across the top. */

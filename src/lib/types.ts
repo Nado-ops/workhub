@@ -20,6 +20,7 @@ export interface Client {
   plan: string | null
   monthly_fee: number | null
   support_hours_per_month: number | null
+  billing_details?: string | null
   notes: string | null
   created_at: string
 }

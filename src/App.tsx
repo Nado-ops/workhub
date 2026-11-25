@@ -22,6 +22,10 @@ import MyWork from './pages/admin/MyWork'
 import Tasks from './pages/admin/Tasks'
 import Knowledge from './pages/admin/Knowledge'
 import Announcements from './pages/admin/Announcements'
+import Calendar from './pages/admin/Calendar'
+import ActivityLog from './pages/admin/ActivityLog'
+import PrintDocument from './pages/PrintDocument'
+import MonthlyReport from './pages/MonthlyReport'
 import ClientDashboard from './pages/client/ClientDashboard'
 import MyTickets from './pages/client/MyTickets'
 import ClientTicket from './pages/client/ClientTicket'
@@ -47,12 +51,17 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Admin & staff */}
+          <Route path="/print/doc/:id" element={<RequireRole roles={['admin', 'client']}><PrintDocument /></RequireRole>} />
+          <Route path="/app/report" element={<RequireRole roles={['admin', 'staff']}><MonthlyReport /></RequireRole>} />
+          <Route path="/portal/report" element={<RequireRole roles={['client']}><MonthlyReport /></RequireRole>} />
           <Route path="/app" element={<RequireRole roles={['admin', 'staff']}><AdminLayout /></RequireRole>}>
             <Route index element={<Overview />} />
             <Route path="my-work" element={<MyWork />} />
             <Route path="tasks" element={<Tasks />} />
             <Route path="knowledge" element={<Knowledge />} />
             <Route path="announcements" element={<Announcements />} />
+            <Route path="calendar" element={<Calendar />} />
+            <Route path="activity" element={<RequireRole roles={['admin']}><ActivityLog /></RequireRole>} />
             <Route path="tickets" element={<Tickets />} />
             <Route path="tickets/:id" element={<TicketDetail />} />
             <Route path="clients" element={<Clients />} />

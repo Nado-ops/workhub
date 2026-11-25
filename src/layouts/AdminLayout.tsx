@@ -14,6 +14,7 @@ const MAIN: Item[] = [
   { to: '/app', label: 'Overview', roles: ['admin', 'staff'] },
   { to: '/app/my-work', label: 'My work', roles: ['admin', 'staff'] },
   { to: '/app/tasks', label: 'Tasks', roles: ['admin', 'staff'] },
+  { to: '/app/calendar', label: 'Calendar', roles: ['admin', 'staff'] },
   { to: '/app/tickets', label: 'Support tickets', roles: ['admin', 'staff'] },
   { to: '/app/clients', label: 'Clients', roles: ['admin', 'staff'] },
   { to: '/app/projects', label: 'Projects', roles: ['admin', 'staff'] },
@@ -28,7 +29,8 @@ const WORKSPACE: Item[] = [
   { to: '/app/announcements', label: 'Announcements', roles: ['admin', 'staff'] },
   { to: '/app/knowledge', label: 'Knowledge base', roles: ['admin', 'staff'] },
   { to: '/app/hr', label: 'HR & people', staffLabel: 'My HR', roles: ['admin', 'staff'] },
-  { to: '/app/team', label: 'Team & roles', roles: ['admin'] },
+  { to: '/app/team', label: 'Team & settings', roles: ['admin'] },
+  { to: '/app/activity', label: 'Activity log', roles: ['admin'] },
 ]
 
 /** The admin & staff shell: menu on the left, the page on the right. */
