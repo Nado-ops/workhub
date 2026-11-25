@@ -3,7 +3,8 @@ import { supabase } from '../../lib/supabase'
 import type { Doc, DocLine, DocTotals } from '../../lib/types'
 import { rand, shortDate } from '../../lib/format'
 import { STATUS_TEXT, STATUS_TONE, docStatus } from '../../lib/finance'
-import { BUSINESS } from '../../lib/business'
+import { useBusiness } from '../../lib/business'
+import { Link } from 'react-router-dom'
 
 /** A client's quotes and invoices. Drafts never reach this page — the
  *  database only shows a client documents that have been sent. */
@@ -11,6 +12,7 @@ export default function ClientInvoices() {
   const [docs, setDocs] = useState<Doc[]>([])
   const [totals, setTotals] = useState<Record<string, DocTotals>>({})
   const [open, setOpen] = useState<string | null>(null)
+  const business = useBusiness()
   const [lines, setLines] = useState<DocLine[]>([])
   const [error, setError] = useState<string | null>(null)
   const [thanks, setThanks] = useState<string | null>(null)
@@ -60,18 +62,19 @@ export default function ClientInvoices() {
           {actions}
         </div>
         {open === d.id && (
-          <div className="mx-5 mb-4 rounded-xl bg-[#F4F7F6] p-4 text-sm text-[#14201F]">
+          <div className="mx-5 mb-4 rounded-xl bg-raised p-4 text-sm text-text">
             {lines.map((l) => (
               <div key={l.id} className="flex justify-between gap-3 py-0.5"><span>{l.description} <span className="text-muted">× {l.qty}</span></span><b>{rand(Number(l.qty) * Number(l.unit_price))}</b></div>
             ))}
-            <div className="mt-2 grid gap-0.5 border-t border-[#DDE5E4] pt-2">
+            <div className="mt-2 grid gap-0.5 border-t border-line pt-2">
               <div className="flex justify-between"><span>Subtotal</span><span>{rand(Number(totals[d.id]?.subtotal ?? 0))}</span></div>
               <div className="flex justify-between"><span>VAT</span><span>{rand(Number(totals[d.id]?.vat ?? 0))}</span></div>
               <div className="flex justify-between font-bold"><span>Total</span><span>{rand(total(d.id))}</span></div>
             </div>
             {d.kind === 'invoice' && d.status !== 'paid' && (
-              <p className="mt-3 text-xs text-[#2C3B3A]">Pay by EFT using <b>{d.number}</b> as the reference. {BUSINESS.bankDetails}</p>
+              <p className="mt-3 text-xs text-soft">Pay by EFT using <b>{d.number}</b> as the reference. {business.bank_details}</p>
             )}
+            <Link to={`/print/doc/${d.id}`} className="btn-ghost mt-3 h-9 px-3 text-xs no-underline">Download PDF</Link>
           </div>
         )}
       </div>

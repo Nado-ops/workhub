@@ -1,16 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../auth/AuthProvider'
 import { timeAgo } from '../lib/format'
 
 interface Note { id: string; kind: string; title: string; body: string | null; link: string | null; read_at: string | null; created_at: string }
 
-const ICON: Record<string, string> = { task: '✅', ticket: '🎫', message: '💬', announcement: '📣', leave: '🌴', claim: '🧾' }
+const ICON: Record<string, string> = { event: '📅', task: '✅', ticket: '🎫', message: '💬', announcement: '📣', leave: '🌴', claim: '🧾' }
 
 /** The bell in the menu. Notifications are made by the database (migration 008); this shows yours. */
 export default function NotificationBell() {
   const [notes, setNotes] = useState<Note[]>([])
   const [open, setOpen] = useState(false)
+  const { profile } = useAuth()
+  // Whether you also get these by email (profiles.email_notifications, migration 009).
+  const [byEmail, setByEmail] = useState<boolean | null>(null)
+  useEffect(() => {
+    if (!profile) return
+    supabase.from('profiles').select('email_notifications').eq('id', profile.id).maybeSingle()
+      .then(({ data }) => setByEmail((data as { email_notifications?: boolean } | null)?.email_notifications ?? null))
+  }, [profile])
+  async function setEmail(on: boolean) {
+    if (!profile) return
+    setByEmail(on)
+    await supabase.from('profiles').update({ email_notifications: on }).eq('id', profile.id)
+  }
   const box = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
@@ -87,6 +101,12 @@ export default function NotificationBell() {
               </li>
             ))}
           </ul>
+          {byEmail !== null && (
+            <label className="flex items-center gap-2 border-t border-line px-4 py-3 text-xs text-soft">
+              <input type="checkbox" className="h-4 w-4 accent-[#B8893A]" checked={byEmail} onChange={(e) => setEmail(e.target.checked)} />
+              Also email me about tasks, events, announcements, leave and claims
+            </label>
+          )}
         </div>
       )}
     </div>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import type { Claim, ClaimStatus, Client, Doc, DocKind, DocLine, DocTotals } from '../../lib/types'
 import { rand, shortDate, todayISO } from '../../lib/format'
-import { BUSINESS } from '../../lib/business'
+import { useBusiness } from '../../lib/business'
 import Tabs from '../../components/Tabs'
 import { STATUS_TEXT, STATUS_TONE, docStatus } from '../../lib/finance'
 import { openFile } from '../../lib/files'
@@ -135,6 +136,7 @@ export default function Finance() {
                         <td className="td"><span className={`pill ${STATUS_TONE[s]}`}>● {STATUS_TEXT[s]}</span></td>
                         <td className="td">
                           <div className="flex flex-wrap justify-end gap-2">
+                            <Link to={`/print/doc/${d.id}`} className="btn-ghost h-8 px-3 text-xs no-underline">PDF</Link>
                             {d.status === 'draft' && (
                               <>
                                 <button className="btn-ghost h-8 px-3 text-xs" onClick={() => editDraft(d)}>Edit</button>
@@ -235,6 +237,7 @@ function DocBuilder({
   start, clients, onDone, onClose,
 }: { start: BuilderStart; clients: Pick<Client, 'id' | 'name'>[]; onDone: () => void; onClose: () => void }) {
   const editing = start.doc ?? null
+  const business = useBusiness()
   const [kind, setKind] = useState<DocKind>(editing?.kind ?? start.kind ?? 'invoice')
   const [clientId, setClientId] = useState(editing?.client_id ?? '')
   const [title, setTitle] = useState(editing?.title ?? '')
@@ -355,30 +358,30 @@ function DocBuilder({
         </div>
       </section>
 
-      <section aria-label="Preview" className="flex min-w-0 flex-[1_1_360px] flex-col gap-3 rounded-2xl bg-[#F4F7F6] p-6 text-[#14201F]">
+      <section aria-label="Preview" className="flex min-w-0 flex-[1_1_360px] flex-col gap-3 rounded-2xl border border-line bg-raised p-6 text-text">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs tracking-wider text-muted">{BUSINESS.name}</p>
-            <p className="mt-1 text-2xl font-bold">{kind === 'invoice' ? (BUSINESS.vatNumber && vat ? 'TAX INVOICE' : 'INVOICE') : 'QUOTE'}</p>
+            <p className="text-xs tracking-wider text-muted">{(business.name || 'Your business name')}</p>
+            <p className="mt-1 text-2xl font-bold">{kind === 'invoice' ? (business.vat_number && vat ? 'TAX INVOICE' : 'INVOICE') : 'QUOTE'}</p>
             <p className="text-xs text-muted">{editing?.number ?? 'Number given when saved'} · {shortDate(todayISO())}</p>
           </div>
           <div className="text-right text-xs"><p className="text-muted">For</p><b className="text-sm">{clientName}</b></div>
         </div>
-        <div className="border-t border-[#DDE5E4]" />
+        <div className="border-t border-line" />
         {lines.filter((l) => l.description.trim()).map((l) => (
           <div key={l.key} className="flex justify-between gap-3 text-sm">
             <span>{l.description} <span className="text-muted">× {l.qty}</span></span>
             <b>{rand(num(l.qty) * num(l.unit_price))}</b>
           </div>
         ))}
-        <div className="grid gap-1 border-t border-[#DDE5E4] pt-2.5 text-sm">
+        <div className="grid gap-1 border-t border-line pt-2.5 text-sm">
           <div className="flex justify-between"><span>Subtotal</span><span>{rand(subtotal)}</span></div>
           <div className="flex justify-between"><span>VAT</span><span>{rand(vatAmount)}</span></div>
           <div className="flex justify-between text-base font-bold"><span>Total</span><span>{rand(subtotal + vatAmount)}</span></div>
         </div>
-        <p className="rounded-lg border border-[#DDE5E4] bg-white p-2.5 text-xs leading-relaxed text-[#2C3B3A]">
+        <p className="rounded-lg border border-line bg-panel p-2.5 text-xs leading-relaxed text-soft">
           {kind === 'invoice'
-            ? `Please pay by EFT by ${shortDate(dueDate)}, using the invoice number as the reference. ${BUSINESS.bankDetails}`
+            ? `Please pay by EFT by ${shortDate(dueDate)}, using the invoice number as the reference. ${business.bank_details ?? ''}`
             : `This quote is valid until ${shortDate(dueDate)}. You can accept it in your portal.`}
         </p>
       </section>

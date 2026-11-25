@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../auth/AuthProvider'
 import type { Client, Profile, Role } from '../../lib/types'
+import BusinessSettings from '../../components/BusinessSettings'
 import EmailSettings from '../../components/EmailSettings'
 
 /** Admin only: set each person's role and, for clients, their company. */
@@ -36,7 +37,7 @@ export default function Team() {
   return (
     <div className="flex flex-col gap-4">
       <div className="pt-2">
-        <h1 className="text-2xl font-semibold">Team &amp; roles</h1>
+        <h1 className="text-2xl font-semibold">Team &amp; settings</h1>
         <p className="mt-1 text-sm text-muted">Who can log in, and what they're allowed to see.</p>
       </div>
 
@@ -94,6 +95,7 @@ export default function Team() {
       </section>
       <p className="text-xs text-muted">You can't change your own role, so you can't lock yourself out by accident.</p>
 
+      <BusinessSettings />
       <EmailSettings />
     </div>
   )

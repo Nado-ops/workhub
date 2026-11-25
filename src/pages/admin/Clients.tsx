@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
 import type { Client } from '../../lib/types'
@@ -80,6 +81,7 @@ function ClientForm({ client, onSaved }: { client?: Client; onSaved: () => void 
   const [fee, setFee] = useState(String(client?.monthly_fee ?? ''))
   const [hours, setHours] = useState(String(client?.support_hours_per_month ?? ''))
   const [notes, setNotes] = useState(client?.notes ?? '')
+  const [billing, setBilling] = useState(client?.billing_details ?? '')
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
 
@@ -92,6 +94,7 @@ function ClientForm({ client, onSaved }: { client?: Client; onSaved: () => void 
       monthly_fee: Number(fee) || 0,
       support_hours_per_month: Number(hours) || 0,
       notes: notes.trim() || null,
+      billing_details: billing.trim() || null,
     }
     const { error } = client
       ? await supabase.from('clients').update(row).eq('id', client.id)
@@ -116,11 +119,15 @@ function ClientForm({ client, onSaved }: { client?: Client; onSaved: () => void 
       <label className="label flex-[1_1_120px]">Support hours / month
         <input className="input" inputMode="decimal" value={hours} onChange={(e) => setHours(e.target.value)} />
       </label>
+      <label className="label basis-full">Billing details (printed on invoices)
+        <textarea className="input h-16 py-2" value={billing} onChange={(e) => setBilling(e.target.value)} placeholder={'Address\nVAT number'} />
+      </label>
       <label className="label basis-full">Internal notes
         <textarea className="input h-20 py-2" value={notes} onChange={(e) => setNotes(e.target.value)} />
       </label>
       <button className="btn-primary" disabled={busy}>{client ? 'Save changes' : 'Add client'}</button>
       {msg && <span className="text-sm text-muted">{msg}</span>}
+      {client && <Link to={`/app/report?client=${client.id}`} className="btn-ghost no-underline">Monthly report</Link>}
       {client && (
         <p className="basis-full text-xs text-muted">
           To give someone from {client.name} a login: invite them in Supabase (Authentication → Users → Invite), then link them to this company on Team &amp; roles.

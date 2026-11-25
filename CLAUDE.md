@@ -51,5 +51,15 @@ keep code readable, and add short comments where something isn't obvious.
 - Internal work (migration 008, team-only): `tasks`, `kb_articles`, `announcements` (admins post), `notifications`.
   Notifications are only created by database triggers (`public.notify()`); the browser can read/mark/delete its own.
   Pages: My work, Tasks, Knowledge base, Announcements; bell = `src/components/NotificationBell.tsx`.
-- Not built yet: client monthly reports, PDF downloads, study reminder emails.
-- Shared helpers: `src/lib/team.ts` (`useTeam`), `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts`, `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.
+- Migration 009: `business_profile` (one row, edited on Team & settings, printed on PDFs; replaces the old
+  constants), `clients.billing_details`, `tickets.resolved_at`, `client_month_report()` RPC (team: any client;
+  client: own) + pg_cron monthly email on the 1st, `events` (calendar; private = creator only), `audit_log`
+  (triggers on key tables, admin read-only, kept 1 year), `profiles.email_notifications` (notify() also emails
+  task/event/announcement/leave/claim), emails in the navy/gold look.
+- Printable pages (outside the layouts): `/print/doc/:id` (PrintDocument) and `/app/report` + `/portal/report`
+  (MonthlyReport). "Download PDF" = `window.print()` → Save as PDF; `PrintBar` is hidden when printing.
+- Calendar (`/app/calendar`) merges events, approved leave, task/project/invoice/renewal dates, CRM follow-ups,
+  own study reminders and SA public holidays (`src/lib/holidays.ts`). Activity log (`/app/activity`, admin) has
+  the JSON backup download.
+- Not built yet: study reminder emails.
+- Shared helpers: `src/lib/team.ts` (`useTeam`), `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts` (`useBusiness`), `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.
