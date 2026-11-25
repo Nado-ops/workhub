@@ -45,6 +45,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 4. `004_file_uploads.sql` — private file storage for receipts, HR documents and ticket screenshots
 5. `005_email_notifications.sql` — email notifications (then follow "Emails" below)
 6. `006_vendors.sql` — vendors list and a daily renewal-reminder email
+7. `007_crm_contacts.sql` — CRM: people (contacts), activity history, lead source, and "won deal → client + draft quote"
 
 Then make yourself admin:
 

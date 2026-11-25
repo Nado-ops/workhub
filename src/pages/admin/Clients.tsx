@@ -61,7 +61,10 @@ export default function Clients() {
 
         <aside aria-label="Client details" className="card flex min-w-0 flex-[1_1_320px] flex-col gap-4 p-5">
           {selected ? (
-            <ClientForm key={selected.id} client={selected} onSaved={load} />
+            <>
+              <ClientForm key={selected.id} client={selected} onSaved={load} />
+              <ClientPeople key={'p' + selected.id} clientId={selected.id} />
+            </>
           ) : (
             <p className="text-sm text-muted">Pick a client to see and edit their details.</p>
           )}
@@ -124,5 +127,64 @@ function ClientForm({ client, onSaved }: { client?: Client; onSaved: () => void 
         </p>
       )}
     </form>
+  )
+}
+
+interface Person { id: string; full_name: string; job_title: string | null; email: string | null; phone: string | null; is_primary: boolean }
+
+/** The people at this client (contacts table, migration 007). Deals that are won bring their people here. */
+function ClientPeople({ clientId }: { clientId: string }) {
+  const [people, setPeople] = useState<Person[]>([])
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [error, setError] = useState<string | null>(null)
+
+  async function load() {
+    const { data, error } = await supabase.from('contacts').select('id, full_name, job_title, email, phone, is_primary')
+      .eq('client_id', clientId).order('is_primary', { ascending: false }).order('full_name')
+    if (error) setError(error.message)
+    setPeople((data as Person[] | null) ?? [])
+  }
+  useEffect(() => { load() }, [clientId])
+
+  async function add(e: FormEvent) {
+    e.preventDefault()
+    const { error } = await supabase.from('contacts').insert({
+      client_id: clientId, full_name: name.trim(), email: email.trim() || null, phone: phone.trim() || null, is_primary: people.length === 0,
+    })
+    if (error) return setError(error.message)
+    setName(''); setEmail(''); setPhone('')
+    load()
+  }
+  async function remove(id: string) {
+    const { error } = await supabase.from('contacts').delete().eq('id', id)
+    if (error) setError(error.message)
+    else load()
+  }
+
+  return (
+    <div className="flex flex-col gap-3 border-t border-line pt-4">
+      <h3 className="font-semibold">People</h3>
+      {people.length === 0 && <p className="text-sm text-muted">No people saved yet.</p>}
+      {people.map((c) => (
+        <div key={c.id} className="flex items-start justify-between gap-2 text-sm">
+          <div>
+            <p className="font-medium">{c.full_name} {c.is_primary && <span className="pill ml-1 text-accent">Main</span>}</p>
+            <p className="text-xs text-muted">
+              {[c.job_title, c.email, c.phone].filter(Boolean).join(' · ') || '—'}
+            </p>
+          </div>
+          <button className="text-xs text-muted hover:text-danger" onClick={() => remove(c.id)} aria-label={`Remove ${c.full_name}`}>Remove</button>
+        </div>
+      ))}
+      <form onSubmit={add} className="flex flex-wrap items-end gap-2">
+        <input className="input flex-[1_1_140px]" aria-label="Name" placeholder="Name" required value={name} onChange={(e) => setName(e.target.value)} />
+        <input className="input flex-[1_1_160px]" aria-label="Email" placeholder="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input className="input flex-[1_1_120px]" aria-label="Phone" placeholder="Phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        <button className="btn-ghost h-11">Add</button>
+      </form>
+      {error && <p className="text-sm text-danger">{error}</p>}
+    </div>
   )
 }
