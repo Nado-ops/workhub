@@ -10,7 +10,7 @@ export default function PhaseSteps({ phase, done }: { phase: ProjectPhase; done?
         <span
           key={ph}
           className={`flex-1 rounded-md py-1.5 text-center text-[11px] ${
-            done || i < at ? 'bg-[#123330] text-[#7FE6D3]' : i === at ? 'bg-[#1E3B39] font-semibold text-text' : 'bg-[#132225] text-[#6E8487]'
+            done || i < at ? 'bg-success-soft text-success' : i === at ? 'bg-accent-soft font-semibold text-text' : 'bg-raised text-muted'
           }`}
         >
           {PHASE_LABEL[ph]}

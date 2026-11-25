@@ -39,10 +39,10 @@ export default function EmailSettings() {
   }
 
   const state = (r: Sent) =>
-    r.status === 'not set up' ? { t: 'Not set up', c: 'bg-[#3A2A10] text-warn' }
-    : r.status.startsWith('error') || (r.status_code !== null && r.status_code >= 300) ? { t: 'Failed', c: 'bg-[#3A1618] text-danger' }
-    : r.status_code === null ? { t: 'Sending…', c: 'bg-[#182640] text-info' }
-    : { t: 'Sent', c: 'bg-[#123330] text-accent' }
+    r.status === 'not set up' ? { t: 'Not set up', c: 'bg-warn-soft text-warn' }
+    : r.status.startsWith('error') || (r.status_code !== null && r.status_code >= 300) ? { t: 'Failed', c: 'bg-danger-soft text-danger' }
+    : r.status_code === null ? { t: 'Sending…', c: 'bg-info-soft text-info' }
+    : { t: 'Sent', c: 'bg-success-soft text-success' }
 
   return (
     <section aria-label="Email notifications" className="card flex flex-col gap-3 p-5">

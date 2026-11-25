@@ -57,7 +57,7 @@ export default function Login() {
   const current = LINES[line]
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <div className="theme-dark flex min-h-screen flex-col md:flex-row">
       {/* Left: animated panel */}
       <section
         aria-label="Welcome"

@@ -45,7 +45,7 @@ export default function Clients() {
               <thead><tr><th className="th">Client</th><th className="th">Plan</th><th className="th">Monthly</th><th className="th">Tickets</th></tr></thead>
               <tbody>
                 {rows.map((c) => (
-                  <tr key={c.id} onClick={() => setPick(c.id)} className={`cursor-pointer ${pick === c.id ? 'bg-[#13282A]' : 'hover:bg-[#13282A]'}`}>
+                  <tr key={c.id} onClick={() => setPick(c.id)} className={`cursor-pointer ${pick === c.id ? 'bg-hover' : 'hover:bg-hover'}`}>
                     <td className="td font-medium">
                       <button className="cursor-pointer text-left" aria-pressed={pick === c.id}>{c.name}</button>
                     </td>
@@ -170,7 +170,7 @@ function ClientPeople({ clientId }: { clientId: string }) {
       {people.map((c) => (
         <div key={c.id} className="flex items-start justify-between gap-2 text-sm">
           <div>
-            <p className="font-medium">{c.full_name} {c.is_primary && <span className="pill ml-1 text-accent">Main</span>}</p>
+            <p className="font-medium">{c.full_name} {c.is_primary && <span className="pill ml-1 text-accent-text">Main</span>}</p>
             <p className="text-xs text-muted">
               {[c.job_title, c.email, c.phone].filter(Boolean).join(' · ') || '—'}
             </p>

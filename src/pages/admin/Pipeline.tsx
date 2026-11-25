@@ -47,8 +47,8 @@ const STAGES: { key: Stage; label: string; colour: string }[] = [
   { key: 'lead', label: 'Lead', colour: 'text-muted' },
   { key: 'contacted', label: 'Contacted', colour: 'text-info' },
   { key: 'proposal_sent', label: 'Proposal sent', colour: 'text-warn' },
-  { key: 'negotiation', label: 'Negotiation', colour: 'text-[#C4B5FF]' },
-  { key: 'won', label: 'Won', colour: 'text-accent' },
+  { key: 'negotiation', label: 'Negotiation', colour: 'text-violet' },
+  { key: 'won', label: 'Won', colour: 'text-accent-text' },
 ]
 const OPEN: Stage[] = ['lead', 'contacted', 'proposal_sent', 'negotiation']
 
@@ -129,7 +129,7 @@ export default function Pipeline() {
           {STAGES.map((s, si) => {
             const list = shown.filter((d) => d.stage === s.key)
             return (
-              <section key={s.key} aria-label={s.label} className="flex min-h-[420px] flex-col gap-2.5 rounded-2xl border border-line bg-[#0C1719] p-3">
+              <section key={s.key} aria-label={s.label} className="flex min-h-[420px] flex-col gap-2.5 rounded-2xl border border-line bg-raised p-3">
                 <div className="px-1 pb-1">
                   <div className="flex justify-between"><span className={`text-sm font-semibold ${s.colour}`}>● {s.label}</span><span className="text-xs text-muted">{list.length}</span></div>
                   <p className="mt-1 text-sm text-soft">{rand(sum(list))}</p>
@@ -138,8 +138,8 @@ export default function Pipeline() {
                   const due = d.next_step_on && d.next_step_on <= todayISO()
                   const main = d.contacts.find((c) => c.is_primary) ?? d.contacts[0]
                   return (
-                    <article key={d.id} className={`flex flex-col gap-2 rounded-xl border bg-panel p-3 ${openId === d.id ? 'border-accent' : 'border-[#1F3235]'}`}>
-                      <button className="cursor-pointer text-left font-semibold hover:text-accent" onClick={() => setOpenId(d.id)}>{d.company}</button>
+                    <article key={d.id} className={`flex flex-col gap-2 rounded-xl border bg-panel p-3 ${openId === d.id ? 'border-accent' : 'border-line'}`}>
+                      <button className="cursor-pointer text-left font-semibold hover:text-accent-text" onClick={() => setOpenId(d.id)}>{d.company}</button>
                       {d.description && <p className="text-xs text-muted">{d.description}</p>}
                       {main && <p className="text-xs text-soft">👤 {main.full_name}{d.contacts.length > 1 ? ` +${d.contacts.length - 1}` : ''}</p>}
                       <div className="flex items-center justify-between gap-2">
@@ -147,16 +147,16 @@ export default function Pipeline() {
                         <span className="text-[11px] text-muted">{sourceLabel(d.source) ?? d.owner?.full_name?.split(' ')[0] ?? ''}</span>
                       </div>
                       {d.next_step && (
-                        <p className={`rounded-lg px-2 py-1.5 text-xs ${due ? 'bg-[#3A2A10] text-warn' : 'bg-[#132225] text-soft'}`}>
+                        <p className={`rounded-lg px-2 py-1.5 text-xs ${due ? 'bg-warn-soft text-warn' : 'bg-raised text-soft'}`}>
                           {d.next_step}{d.next_step_on ? ` · ${shortDate(d.next_step_on)}` : ''}
                         </p>
                       )}
                       {s.key === 'won' && (d.client_id
-                        ? <Link to="/app/clients" className="text-xs text-accent">✓ Client</Link>
-                        : <button className="text-left text-xs text-accent hover:underline" onClick={() => setOpenId(d.id)}>Make them a client →</button>)}
+                        ? <Link to="/app/clients" className="text-xs text-accent-text">✓ Client</Link>
+                        : <button className="text-left text-xs text-accent-text hover:underline" onClick={() => setOpenId(d.id)}>Make them a client →</button>)}
                       {si < STAGES.length - 1 && (
                         <div className="flex gap-1.5">
-                          <button className="btn h-8 flex-1 border border-[#3A3322] bg-transparent px-2 text-xs font-normal text-accent" onClick={() => move(d, STAGES[si + 1].key)}>
+                          <button className="btn h-8 flex-1 border border-accent/50 bg-transparent px-2 text-xs font-normal text-accent-text" onClick={() => move(d, STAGES[si + 1].key)}>
                             Move to {STAGES[si + 1].label} →
                           </button>
                           <button className="btn h-8 border border-line bg-transparent px-2 text-xs font-normal text-muted" onClick={() => move(d, 'lost')} title="Mark as lost">Lost</button>
@@ -244,14 +244,14 @@ function ConvertBar({ deal, onDone }: { deal: Deal; onDone: () => void }) {
   }
 
   if (deal.client_id && !result) {
-    return <p className="mx-5 mb-3 rounded-xl bg-[#1A1A10] px-3 py-2 text-sm text-soft">✓ This deal is a client now. <Link to="/app/clients" className="text-accent">Open Clients</Link></p>
+    return <p className="mx-5 mb-3 rounded-xl bg-accent-soft px-3 py-2 text-sm text-soft">✓ This deal is a client now. <Link to="/app/clients" className="text-accent-text">Open Clients</Link></p>
   }
   return (
-    <div className="mx-5 mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#3A3322] bg-[#17140C] px-4 py-3">
+    <div className="mx-5 mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/50 bg-accent-soft px-4 py-3">
       {result ? (
         <p className="text-sm">
-          ✓ Done. <Link to="/app/clients" className="text-accent">See the new client</Link>
-          {result.quote && <> · <Link to="/app/finance" className="text-accent">Open the draft quote in Finance</Link></>}
+          ✓ Done. <Link to="/app/clients" className="text-accent-text">See the new client</Link>
+          {result.quote && <> · <Link to="/app/finance" className="text-accent-text">Open the draft quote in Finance</Link></>}
         </p>
       ) : (
         <>
@@ -377,16 +377,16 @@ function PeopleTab({ deal, onChange }: { deal: Deal; onChange: () => void }) {
           <li key={c.id} className="rounded-xl border border-line p-3">
             <div className="flex items-start justify-between gap-2">
               <div>
-                <p className="font-semibold">{c.full_name} {c.is_primary && <span className="pill ml-1 text-accent">Main</span>}</p>
+                <p className="font-semibold">{c.full_name} {c.is_primary && <span className="pill ml-1 text-accent-text">Main</span>}</p>
                 {c.job_title && <p className="text-xs text-muted">{c.job_title}</p>}
               </div>
               <div className="flex gap-2 text-xs">
-                {!c.is_primary && <button className="text-muted hover:text-accent" onClick={() => makeMain(c)}>Make main</button>}
+                {!c.is_primary && <button className="text-muted hover:text-accent-text" onClick={() => makeMain(c)}>Make main</button>}
                 <button className="text-muted hover:text-danger" onClick={() => remove(c)} aria-label={`Remove ${c.full_name}`}>Remove</button>
               </div>
             </div>
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-              {c.email && <a href={`mailto:${c.email}`} className="text-accent">{c.email}</a>}
+              {c.email && <a href={`mailto:${c.email}`} className="text-accent-text">{c.email}</a>}
               {c.phone && <a href={`tel:${c.phone.replace(/\s/g, '')}`} className="text-soft">{c.phone}</a>}
             </div>
           </li>
@@ -454,7 +454,7 @@ function DealForm({ deal, onSaved, onDeleted, bare }: { deal: Deal | null; onSav
       <label className="label flex-[1_1_150px]">By<input className="input" type="date" value={nextOn} onChange={(e) => setNextOn(e.target.value)} /></label>
       <button className="btn-primary">{deal ? 'Save' : 'Add deal'}</button>
       {deal && <button type="button" className="btn-ghost" onClick={remove}>Delete deal</button>}
-      {saved && deal && <span className="text-sm text-accent">Saved</span>}
+      {saved && deal && <span className="text-sm text-accent-text">Saved</span>}
       {error && <p className="basis-full text-sm text-danger">{error}</p>}
     </form>
   )

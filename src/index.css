@@ -1,27 +1,59 @@
 @import "tailwindcss";
 
-/* Work Hub colours — dark background with the gold from the logo */
+/* Work Hub colours — light and calm inside the app, navy and gold from the logo.
+   Navy = trust and focus, gold = actions and highlights, green = done, red = real problems only. */
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
-  --color-ink: #0A1315;      /* page background */
-  --color-panel: #0F1B1E;    /* cards and sidebar */
-  --color-well: #0A1416;     /* inputs */
-  --color-line: #1C2C2F;     /* borders */
-  --color-line-2: #24383B;   /* input borders */
-  --color-text: #E6EEEE;
-  --color-soft: #C9D6D7;
-  --color-muted: #8FA3A5;
-  --color-accent: #D4AF6A;   /* logo gold */
-  --color-accent-ink: #1C1405;
-  --color-danger: #FF9A9A;
-  --color-warn: #F5A05B;
-  --color-info: #9DBBFF;
+  --color-ink: #F4F6FA;          /* page background (soft off-white) */
+  --color-panel: #FFFFFF;        /* cards */
+  --color-well: #FFFFFF;         /* inputs */
+  --color-raised: #F1F4F8;       /* quiet grey boxes inside cards */
+  --color-hover: #EEF2F7;        /* hovered / selected rows */
+  --color-line: #E3E8EF;         /* borders */
+  --color-line-2: #CBD3DE;       /* input borders */
+  --color-text: #0B1733;         /* logo navy */
+  --color-soft: #334155;
+  --color-muted: #5B6577;
+  --color-accent: #D4AF6A;       /* logo gold: buttons, bars, focus */
+  --color-accent-ink: #0B1733;   /* text on gold */
+  --color-accent-text: #8A6420;  /* gold dark enough to read as text */
+  --color-accent-soft: #FBF3E2;
+  --color-success: #1F7A4D;
+  --color-success-soft: #E8F5EE;
+  --color-danger: #C0362C;
+  --color-danger-soft: #FDECEA;
+  --color-warn: #B45309;
+  --color-warn-soft: #FEF3E2;
+  --color-info: #2557A7;
+  --color-info-soft: #EAF1FB;
+  --color-violet: #6D4FC2;
+  --color-violet-soft: #F1EDFB;
+}
+
+/* Dark look, kept for the login and reset-password pages. */
+.theme-dark {
+  --color-ink: #0A1315; --color-panel: #0F1B1E; --color-well: #0A1416; --color-raised: #132225; --color-hover: #13282A;
+  --color-line: #1C2C2F; --color-line-2: #24383B;
+  --color-text: #E6EEEE; --color-soft: #C9D6D7; --color-muted: #8FA3A5;
+  --color-accent-text: #D4AF6A; --color-accent-ink: #1C1405; --color-accent-soft: #1A1810;
+  --color-danger: #FF9A9A; --color-danger-soft: #3A1618; --color-warn: #F5A05B; --color-info: #9DBBFF;
+  color: var(--color-text);
+  background: radial-gradient(1200px 500px at 50% -10%, #12302F 0%, #0A1315 60%) fixed, #0A1315;
+}
+
+/* Navy, for the admin side menu. */
+.theme-navy {
+  --color-panel: #0B1733; --color-raised: #132249; --color-hover: #16264F;
+  --color-line: #1E2B4D; --color-line-2: #2A3A63;
+  --color-text: #F1F4F8; --color-soft: #C9D2E3; --color-muted: #8E9AB5;
+  --color-accent-text: #D4AF6A;
+  color: var(--color-text);
 }
 
 html, body, #root { min-height: 100%; }
 body {
   margin: 0;
-  background: radial-gradient(1200px 500px at 50% -10%, #12302F 0%, #0A1315 60%) fixed, #0A1315;
+  background: var(--color-ink);
   color: var(--color-text);
   font-family: var(--font-sans);
 }
@@ -29,7 +61,7 @@ body {
 /* Small shared building blocks, so pages stay short.
    Each one can still be overridden by a normal class (e.g. "input h-9"). */
 @utility card {
-  @apply bg-panel border border-line rounded-2xl;
+  @apply bg-panel border border-line rounded-2xl shadow-[0_1px_2px_rgba(11,23,51,0.04)];
 }
 @utility input {
   @apply h-11 w-full rounded-xl border border-line-2 bg-well px-3 text-sm text-text outline-none focus:border-accent;

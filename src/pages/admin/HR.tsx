@@ -20,7 +20,7 @@ interface HrDoc { id: string; user_id: string | null; name: string; status: stri
 interface Absence { user_id: string; full_name: string; start_date: string; end_date: string }
 
 const LEAVE_LABEL: Record<LeaveType, string> = { annual: 'Annual leave', sick: 'Sick leave', family_responsibility: 'Family responsibility', unpaid: 'Unpaid leave' }
-const DECISION_TONE: Record<Decision, string> = { waiting: 'bg-[#3A2A10] text-warn', approved: 'bg-[#123330] text-accent', declined: 'bg-[#16282B] text-muted' }
+const DECISION_TONE: Record<Decision, string> = { waiting: 'bg-warn-soft text-warn', approved: 'bg-success-soft text-success', declined: 'bg-raised text-muted' }
 const DECISION_TEXT: Record<Decision, string> = { waiting: 'Waiting', approved: 'Approved', declined: 'Declined' }
 
 /** Monday–Friday days between two dates, both included. */
@@ -113,7 +113,7 @@ function PeopleTab() {
         return (
           <article key={p.id} className="card flex flex-col gap-3 p-4">
             <div className="flex items-center gap-3">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#24403F] font-semibold">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-raised font-semibold">
                 {(p.full_name || p.email || '?').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()}
               </span>
               <div className="min-w-0">
@@ -300,7 +300,7 @@ function TimeTab({ admin, myId }: { admin: boolean; myId?: string }) {
                   <td className="td">{p.name}</td><td className="td text-soft">{hours(p.client)}</td><td className="td text-soft">{hours(p.internal)}</td>
                   <td className="td font-semibold">{hours(p.client + p.internal)}</td>
                   <td className="td text-right">
-                    {p.pending > 0 ? <button className="btn-ghost h-8 px-3 text-xs text-accent" onClick={() => approve(id)}>Approve week</button> : <span className="pill bg-[#123330] text-accent">Approved</span>}
+                    {p.pending > 0 ? <button className="btn-ghost h-8 px-3 text-xs text-accent-text" onClick={() => approve(id)}>Approve week</button> : <span className="pill bg-success-soft text-success">Approved</span>}
                   </td>
                 </tr>
               ))}
@@ -333,7 +333,7 @@ function TimeTab({ admin, myId }: { admin: boolean; myId?: string }) {
             <span className="w-24 text-muted">{shortDate(r.work_date)}</span>
             <span className="min-w-0 flex-1">{r.client?.name ?? 'Internal'}{r.note ? <span className="text-muted"> · {r.note}</span> : ''}</span>
             <b>{hours(r.minutes)}</b>
-            {r.approved ? <span className="pill bg-[#123330] text-accent">Approved</span> : (
+            {r.approved ? <span className="pill bg-success-soft text-success">Approved</span> : (
               <button aria-label="Delete entry" className="cursor-pointer text-xs text-muted hover:text-text" onClick={() => remove(r.id)}>✕</button>
             )}
           </div>
@@ -383,7 +383,7 @@ function MyClaims() {
     setDescription(''); setAmount(''); setReceipt(null); setError(null); load()
   }
 
-  const tone = { waiting: 'bg-[#3A2A10] text-warn', approved: 'bg-[#182640] text-info', paid_back: 'bg-[#123330] text-accent', declined: 'bg-[#16282B] text-muted' }
+  const tone = { waiting: 'bg-warn-soft text-warn', approved: 'bg-info-soft text-info', paid_back: 'bg-success-soft text-success', declined: 'bg-raised text-muted' }
   const text = { waiting: 'Waiting', approved: 'Approved', paid_back: 'Paid back', declined: 'Declined' }
 
   return (
@@ -405,7 +405,7 @@ function MyClaims() {
             {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </label>
-        <label className="btn h-10 w-fit cursor-pointer border border-dashed border-[#3A5256] font-normal text-soft">
+        <label className="btn h-10 w-fit cursor-pointer border border-dashed border-line-2 font-normal text-soft">
           {receipt ? `Receipt: ${receipt.name}` : '+ Add receipt photo or PDF'}
           <input type="file" accept={ACCEPT} capture="environment" className="sr-only" onChange={(e) => setReceipt(e.target.files?.[0] ?? null)} />
         </label>
@@ -422,7 +422,7 @@ function MyClaims() {
               <p className="text-sm font-medium">{c.description}</p>
               <p className="text-xs text-muted">{c.category}{c.client ? ` · for ${c.client.name}` : ''} · {shortDate(c.created_at)}</p>
             </div>
-            {c.receipt_path && <button className="cursor-pointer text-xs text-accent" onClick={() => openFile('receipts', c.receipt_path!)}>Receipt</button>}
+            {c.receipt_path && <button className="cursor-pointer text-xs text-accent-text" onClick={() => openFile('receipts', c.receipt_path!)}>Receipt</button>}
             <b className="text-sm">{rand(Number(c.amount))}</b>
             <span className={`pill ${tone[c.status]}`}>{text[c.status]}</span>
           </div>
@@ -472,7 +472,7 @@ function DocsTab({ admin }: { admin: boolean }) {
 
   const soon = todayISO(30)
   const tone = (d: HrDoc) =>
-    d.status === 'Not signed' || (d.expires_on && d.expires_on <= soon) ? 'bg-[#3A1618] text-danger' : d.status === 'Coming up' ? 'bg-[#3A2A10] text-warn' : 'bg-[#123330] text-accent'
+    d.status === 'Not signed' || (d.expires_on && d.expires_on <= soon) ? 'bg-danger-soft text-danger' : d.status === 'Coming up' ? 'bg-warn-soft text-warn' : 'bg-success-soft text-success'
 
   return (
     <div className="flex flex-col gap-4">
@@ -492,7 +492,7 @@ function DocsTab({ admin }: { admin: boolean }) {
             </select>
           </label>
           <label className="label flex-[1_1_140px]">Expires<input className="input" type="date" value={expires} onChange={(e) => setExpires(e.target.value)} /></label>
-          <label className="btn h-11 cursor-pointer border border-dashed border-[#3A5256] font-normal text-soft">
+          <label className="btn h-11 cursor-pointer border border-dashed border-line-2 font-normal text-soft">
             {file ? file.name.slice(0, 24) : '+ Attach file'}
             <input type="file" accept={ACCEPT} className="sr-only" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
           </label>
@@ -509,7 +509,7 @@ function DocsTab({ admin }: { admin: boolean }) {
               <p className="text-sm font-medium">{d.name}</p>
               <p className="text-xs text-muted">{d.user_id ? d.person?.full_name ?? 'Someone' : 'Everyone'}{d.expires_on ? ` · expires ${shortDate(d.expires_on)}` : ''}</p>
             </div>
-            {d.file_path && <button className="cursor-pointer text-xs text-accent" onClick={() => openFile('hr-docs', d.file_path!)}>Open</button>}
+            {d.file_path && <button className="cursor-pointer text-xs text-accent-text" onClick={() => openFile('hr-docs', d.file_path!)}>Open</button>}
             <span className={`pill ${tone(d)}`}>{d.expires_on && d.expires_on <= soon ? 'Expires soon' : d.status}</span>
             {admin && <button aria-label="Delete document" className="cursor-pointer text-xs text-muted hover:text-text" onClick={() => remove(d.id)}>✕</button>}
           </div>

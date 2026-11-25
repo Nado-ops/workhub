@@ -67,7 +67,7 @@ export default function TicketDetail() {
   return (
     <div className="flex flex-col gap-4">
       <div className="pt-2">
-        <Link to="/app/tickets" className="text-sm text-accent no-underline">‹ Support tickets</Link>
+        <Link to="/app/tickets" className="text-sm text-accent-text no-underline">‹ Support tickets</Link>
         <div className="mt-2 flex flex-wrap items-center gap-2.5">
           <h1 className="text-2xl font-semibold">{ticket.title}</h1>
           <span className={`pill ${PRIORITY_STYLE[ticket.priority]}`}>{PRIORITY_LABEL[ticket.priority]}</span>
@@ -79,7 +79,7 @@ export default function TicketDetail() {
         <Conversation ticket={ticket} messages={messages} onSent={load} />
 
         <aside className="flex min-w-0 flex-[1_1_300px] flex-col gap-4">
-          <section aria-label="Deadline" className={`card p-4 ${clock.risk === 'breach' ? 'border-[#4A2326] bg-[#1F1213]' : ''}`}>
+          <section aria-label="Deadline" className={`card p-4 ${clock.risk === 'breach' ? 'border-danger/30 bg-danger-soft' : ''}`}>
             <p className="text-[11px] tracking-widest text-muted">◷ RESPONSE DEADLINE</p>
             <p className={`mt-1 text-xl ${clock.tone}`}>{clock.text}</p>
           </section>
@@ -138,7 +138,7 @@ function Conversation({ ticket, messages, onSent }: { ticket: Ticket; messages: 
   }
 
   const tab = (on: boolean) =>
-    `h-9 cursor-pointer rounded-lg border px-3 text-sm ${on ? 'border-[#2A4A47] bg-[#16282B] font-semibold text-text' : 'border-transparent text-muted'}`
+    `h-9 cursor-pointer rounded-lg border px-3 text-sm ${on ? 'border-line-2 bg-raised font-semibold text-text' : 'border-transparent text-muted'}`
 
   return (
     <section aria-label="Conversation" className="card min-w-0 flex-[2_1_480px] overflow-hidden">
@@ -150,16 +150,16 @@ function Conversation({ ticket, messages, onSent }: { ticket: Ticket; messages: 
       )}
       {messages.length === 0 && <p className="p-5 text-sm text-muted">No messages yet.</p>}
       {messages.map((m) => (
-        <article key={m.id} className={`border-b border-line p-5 ${m.is_internal ? 'bg-[#1A1810]' : ''}`}>
+        <article key={m.id} className={`border-b border-line p-5 ${m.is_internal ? 'bg-accent-soft' : ''}`}>
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <b>{m.author?.full_name || 'Someone'}</b>
             <span className="text-xs text-muted">· {m.author?.role === 'client' ? 'Client' : 'Team'} · {timeAgo(m.created_at)}</span>
-            {m.is_internal && <span className="pill bg-[#3A2A10] text-warn">Internal note · client can't see</span>}
+            {m.is_internal && <span className="pill bg-warn-soft text-warn">Internal note · client can't see</span>}
           </div>
-          <p className="mt-2 whitespace-pre-line text-sm text-[#D6E1E2]">{m.body}</p>
+          <p className="mt-2 whitespace-pre-line text-sm text-soft">{m.body}</p>
         </article>
       ))}
-      <div className="bg-[#0C1719] p-5">
+      <div className="bg-raised p-5">
         <div role="tablist" className="mb-2.5 flex gap-1.5">
           <button role="tab" aria-selected={!note} className={tab(!note)} onClick={() => setMode('reply')}>Reply to client</button>
           <button role="tab" aria-selected={note} className={tab(note)} onClick={() => setMode('note')}>Internal note</button>
@@ -170,7 +170,7 @@ function Conversation({ ticket, messages, onSent }: { ticket: Ticket; messages: 
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={note ? 'Only your team will see this.' : 'Write a reply to the client…'}
-          className={`input h-auto py-2.5 ${note ? 'border-[#4A3A18] bg-[#1A1810]' : ''}`}
+          className={`input h-auto py-2.5 ${note ? 'border-warn/30 bg-accent-soft' : ''}`}
         />
         {error && <p className="mt-2 text-sm text-danger">{error}</p>}
         <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
@@ -232,7 +232,7 @@ function RemoteSessionCard({
   const usedHours = Math.round((usedMinutes / 60) * 10) / 10
 
   return (
-    <section aria-label="Remote session" className={`card p-4 ${live ? 'border-[#3C5A85] bg-[#121E2E]' : ''}`}>
+    <section aria-label="Remote session" className={`card p-4 ${live ? 'border-info/40 bg-info-soft' : ''}`}>
       <div className="flex items-center justify-between gap-2">
         <p className="text-[11px] tracking-widest text-info">⧉ REMOTE SESSION</p>
         <span className="text-xs text-muted">{planHours > 0 ? `Plan: ${usedHours} of ${planHours} h used` : `${usedHours} h this month`}</span>
@@ -246,7 +246,7 @@ function RemoteSessionCard({
                 <option>AnyDesk</option><option>TeamViewer</option><option>Other</option>
               </select>
             </label>
-            <button className="btn h-11 bg-info text-[#0B1830]" onClick={start}>▶ Start session</button>
+            <button className="btn h-11 bg-info text-white" onClick={start}>▶ Start session</button>
           </div>
           <p className="mt-2 text-xs text-muted">Press start before you connect to the client's computer.</p>
         </>
@@ -258,7 +258,7 @@ function RemoteSessionCard({
             <p className="text-2xl font-semibold tabular-nums">{elapsed}</p>
             <p className="text-xs text-soft">● Live on {live.tool}</p>
           </div>
-          <button className="btn bg-danger text-[#2A0B0D]" onClick={() => setEnding(true)}>■ End</button>
+          <button className="btn bg-danger text-white" onClick={() => setEnding(true)}>■ End</button>
         </div>
       )}
 
@@ -273,7 +273,7 @@ function RemoteSessionCard({
       {error && <p className="mt-2 text-xs text-danger">{error}</p>}
 
       {sessions.filter((s) => s.ended_at).map((s) => (
-        <div key={s.id} className="mt-2.5 flex justify-between gap-2 border-t border-[#1F3043] pt-2 text-xs">
+        <div key={s.id} className="mt-2.5 flex justify-between gap-2 border-t border-info/30 pt-2 text-xs">
           <span className="text-soft">{s.person?.full_name || 'Team'} · {s.tool} · {timeAgo(s.started_at)}</span>
           <b>{formatDuration((new Date(s.ended_at!).getTime() - new Date(s.started_at).getTime()) / 60000)}</b>
         </div>

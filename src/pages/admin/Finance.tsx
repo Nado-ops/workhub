@@ -143,7 +143,7 @@ export default function Finance() {
                               </>
                             )}
                             {d.kind === 'invoice' && d.status === 'sent' && (
-                              <button className="btn-ghost h-8 px-3 text-xs text-accent" onClick={() => act(() => supabase.from('documents').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('id', d.id))}>Mark paid</button>
+                              <button className="btn-ghost h-8 px-3 text-xs text-accent-text" onClick={() => act(() => supabase.from('documents').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('id', d.id))}>Mark paid</button>
                             )}
                             {d.kind === 'quote' && d.status === 'accepted' && (
                               <button className="btn-primary h-8 px-3 text-xs" onClick={() => convertToInvoice(d)}>Turn into invoice</button>
@@ -167,7 +167,7 @@ export default function Finance() {
 
 function Kpi({ label, value, sub, danger }: { label: string; value: string; sub: string; danger?: boolean }) {
   return (
-    <div className={`card p-4 ${danger ? 'border-[#4A2326] bg-[#1F1213]' : ''}`}>
+    <div className={`card p-4 ${danger ? 'border-danger/30 bg-danger-soft' : ''}`}>
       <p className="text-sm text-muted">{label}</p>
       <p className={`mt-1.5 text-2xl font-semibold ${danger ? 'text-danger' : ''}`}>{value}</p>
       <p className="mt-1 text-xs text-soft">{sub}</p>
@@ -181,7 +181,7 @@ function ClaimsTable({ claims, onChange, onError }: { claims: ClaimRow[]; onChan
     if (error) onError(error.message)
     else onChange()
   }
-  const tone: Record<ClaimStatus, string> = { waiting: 'bg-[#3A2A10] text-warn', approved: 'bg-[#182640] text-info', paid_back: 'bg-[#123330] text-accent', declined: 'bg-[#16282B] text-muted' }
+  const tone: Record<ClaimStatus, string> = { waiting: 'bg-warn-soft text-warn', approved: 'bg-info-soft text-info', paid_back: 'bg-success-soft text-success', declined: 'bg-raised text-muted' }
   const text: Record<ClaimStatus, string> = { waiting: 'Waiting', approved: 'Approved', paid_back: 'Paid back', declined: 'Declined' }
   const waiting = claims.filter((c) => c.status === 'waiting').reduce((s, c) => s + Number(c.amount), 0)
   const owed = claims.filter((c) => c.status === 'approved').reduce((s, c) => s + Number(c.amount), 0)
@@ -202,7 +202,7 @@ function ClaimsTable({ claims, onChange, onError }: { claims: ClaimRow[]; onChan
                 <tr key={c.id}>
                   <td className="td">{c.person?.full_name || '—'}</td>
                   <td className="td">{c.description}<p className="text-xs text-muted">{c.category} · {shortDate(c.created_at)}
-                    {c.receipt_path ? <> · <button className="cursor-pointer text-accent" onClick={() => openFile('receipts', c.receipt_path!)}>receipt</button></> : <span className="text-warn"> · no receipt</span>}</p></td>
+                    {c.receipt_path ? <> · <button className="cursor-pointer text-accent-text" onClick={() => openFile('receipts', c.receipt_path!)}>receipt</button></> : <span className="text-warn"> · no receipt</span>}</p></td>
                   <td className="td text-soft">{c.client?.name ?? 'Internal'}</td>
                   <td className="td font-semibold">{rand(Number(c.amount))}</td>
                   <td className="td"><span className={`pill ${tone[c.status]}`}>● {text[c.status]}</span></td>
@@ -214,7 +214,7 @@ function ClaimsTable({ claims, onChange, onError }: { claims: ClaimRow[]; onChan
                           <button className="btn-primary h-8 px-3 text-xs" onClick={() => setStatus(c, 'approved')}>Approve</button>
                         </>
                       )}
-                      {c.status === 'approved' && <button className="btn-ghost h-8 px-3 text-xs text-accent" onClick={() => setStatus(c, 'paid_back')}>Mark paid back</button>}
+                      {c.status === 'approved' && <button className="btn-ghost h-8 px-3 text-xs text-accent-text" onClick={() => setStatus(c, 'paid_back')}>Mark paid back</button>}
                     </div>
                   </td>
                 </tr>
@@ -286,7 +286,7 @@ function DocBuilder({
     onDone()
   }
 
-  const seg = (on: boolean) => `h-8 cursor-pointer rounded-lg px-3.5 text-sm ${on ? 'bg-[#16282B] font-semibold text-text' : 'text-muted'}`
+  const seg = (on: boolean) => `h-8 cursor-pointer rounded-lg px-3.5 text-sm ${on ? 'bg-raised font-semibold text-text' : 'text-muted'}`
 
   return (
     <div className="flex flex-wrap items-start gap-4">
@@ -333,14 +333,14 @@ function DocBuilder({
           </div>
         ))}
         <button
-          className="btn h-9 w-fit border border-dashed border-[#3A5256] font-normal text-soft"
+          className="btn h-9 w-fit border border-dashed border-line-2 font-normal text-soft"
           onClick={() => setLines((cur) => [...cur, { key: Math.max(0, ...cur.map((x) => x.key)) + 1, description: '', qty: '1', unit_price: '' }])}
         >
           + Add item
         </button>
 
         <label className="flex items-center gap-2.5 text-sm text-soft">
-          <input type="checkbox" className="h-4 w-4 accent-[#D4AF6A]" checked={vat} onChange={(e) => setVat(e.target.checked)} />
+          <input type="checkbox" className="h-4 w-4 accent-[#B8893A]" checked={vat} onChange={(e) => setVat(e.target.checked)} />
           Add VAT (15%) — turn off if you're not VAT-registered
         </label>
         <div className="grid gap-1.5 border-t border-line pt-3 text-sm">
@@ -358,16 +358,16 @@ function DocBuilder({
       <section aria-label="Preview" className="flex min-w-0 flex-[1_1_360px] flex-col gap-3 rounded-2xl bg-[#F4F7F6] p-6 text-[#14201F]">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs tracking-wider text-[#4E6366]">{BUSINESS.name}</p>
+            <p className="text-xs tracking-wider text-muted">{BUSINESS.name}</p>
             <p className="mt-1 text-2xl font-bold">{kind === 'invoice' ? (BUSINESS.vatNumber && vat ? 'TAX INVOICE' : 'INVOICE') : 'QUOTE'}</p>
-            <p className="text-xs text-[#4E6366]">{editing?.number ?? 'Number given when saved'} · {shortDate(todayISO())}</p>
+            <p className="text-xs text-muted">{editing?.number ?? 'Number given when saved'} · {shortDate(todayISO())}</p>
           </div>
-          <div className="text-right text-xs"><p className="text-[#4E6366]">For</p><b className="text-sm">{clientName}</b></div>
+          <div className="text-right text-xs"><p className="text-muted">For</p><b className="text-sm">{clientName}</b></div>
         </div>
         <div className="border-t border-[#DDE5E4]" />
         {lines.filter((l) => l.description.trim()).map((l) => (
           <div key={l.key} className="flex justify-between gap-3 text-sm">
-            <span>{l.description} <span className="text-[#4E6366]">× {l.qty}</span></span>
+            <span>{l.description} <span className="text-muted">× {l.qty}</span></span>
             <b>{rand(num(l.qty) * num(l.unit_price))}</b>
           </div>
         ))}

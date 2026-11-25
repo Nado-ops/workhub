@@ -16,8 +16,10 @@ keep code readable, and add short comments where something isn't obvious.
 - Never put the service_role key or any secret in the repo.
 - Client-facing actions that change data (approve an extra, accept a quote) go through
   SECURITY DEFINER functions (see `respond_to_extra`, `respond_to_quote`), not open UPDATE policies.
-- Keep the dark teal look: use the shared classes in `src/index.css` (`card`, `input`, `label`,
-  `btn-primary`, `btn-ghost`, `pill`, `th`, `td`) and the colour tokens there.
+- Look: light inside the app (navy text, gold buttons, navy side menu `theme-navy`); login and reset password stay dark
+  (`theme-dark`). Use the shared classes in `src/index.css` (`card`, `input`, `label`, `btn-primary`, `btn-ghost`, `pill`,
+  `th`, `td`) and the colour tokens there (`accent-text` for gold text, `success`/`danger`/`warn`/`info` + `-soft`).
+  Don't hard-code hex colours in pages.
 - Run `npm run build` before committing; it must pass.
 
 ## Roles (source of truth: the Team & roles design + 001 migration)

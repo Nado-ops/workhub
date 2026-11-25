@@ -10,7 +10,7 @@ export const STATUS_TEXT: Record<string, string> = {
   draft: 'Draft', sent: 'Sent', accepted: 'Accepted', declined: 'Declined', invoiced: 'Invoiced', paid: 'Paid', cancelled: 'Cancelled', overdue: 'Overdue',
 }
 export const STATUS_TONE: Record<string, string> = {
-  draft: 'bg-[#16282B] text-soft', sent: 'bg-[#182640] text-info', accepted: 'bg-[#123330] text-accent', declined: 'bg-[#16282B] text-muted',
-  invoiced: 'bg-[#16282B] text-muted', paid: 'bg-[#123330] text-accent', cancelled: 'bg-[#16282B] text-muted', overdue: 'bg-[#3A1618] text-danger',
+  draft: 'bg-raised text-soft', sent: 'bg-info-soft text-info', accepted: 'bg-success-soft text-success', declined: 'bg-raised text-muted',
+  invoiced: 'bg-raised text-muted', paid: 'bg-success-soft text-success', cancelled: 'bg-raised text-muted', overdue: 'bg-danger-soft text-danger',
 }
 

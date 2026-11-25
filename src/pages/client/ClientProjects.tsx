@@ -47,17 +47,17 @@ export default function ClientProjects() {
                 <h2 className="text-lg font-semibold">{p.name}</h2>
                 <p className="text-sm text-muted">{p.type ?? 'Project'} · {p.due_date ? `due ${shortDate(p.due_date)}` : 'no due date yet'}</p>
               </div>
-              <span className="pill bg-[#123330] text-accent">{p.progress}% done</span>
+              <span className="pill bg-success-soft text-success">{p.progress}% done</span>
             </div>
 
             <div>
-              <div className="h-2 rounded bg-[#1A292C]"><div className="h-2 rounded bg-accent" style={{ width: `${p.progress}%` }} /></div>
+              <div className="h-2 rounded bg-raised"><div className="h-2 rounded bg-accent" style={{ width: `${p.progress}%` }} /></div>
               <p className="mt-1.5 text-xs text-soft">Now in the {PHASE_LABEL[p.phase].toLowerCase()} phase</p>
             </div>
             <PhaseSteps phase={p.phase} />
 
             {p.waiting_on_client && (
-              <p className="rounded-xl border border-[#2A3D55] bg-[#121E2E] p-3 text-sm">
+              <p className="rounded-xl border border-info/30 bg-info-soft p-3 text-sm">
                 <b className="text-info">Next step is yours:</b> we're waiting for your approval to carry on. Check your email or raise a ticket with any questions.
               </p>
             )}
@@ -87,7 +87,7 @@ export default function ClientProjects() {
                         <button className="btn-primary h-9" disabled={busyId === x.id} onClick={() => respond(x, true)}>Approve</button>
                       </span>
                     ) : (
-                      <span className={`pill ${x.status === 'approved' ? 'bg-[#123330] text-accent' : 'bg-[#16282B] text-muted'}`}>
+                      <span className={`pill ${x.status === 'approved' ? 'bg-success-soft text-success' : 'bg-raised text-muted'}`}>
                         {x.status === 'approved' ? 'Approved' : 'Declined'}
                       </span>
                     )}

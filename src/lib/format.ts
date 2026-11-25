@@ -22,21 +22,21 @@ export const CLIENT_STATUS_LABEL: Record<TicketStatus, string> = {
 }
 
 export const STATUS_STYLE: Record<TicketStatus, string> = {
-  open: 'bg-[#182640] text-info',
-  in_progress: 'bg-[#123330] text-accent',
-  waiting_on_client: 'bg-[#16282B] text-soft',
-  escalated: 'bg-[#3A1618] text-danger',
-  resolved: 'bg-[#16282B] text-muted',
-  closed: 'bg-[#16282B] text-muted',
+  open: 'bg-info-soft text-info',
+  in_progress: 'bg-info-soft text-info',
+  waiting_on_client: 'bg-raised text-soft',
+  escalated: 'bg-danger-soft text-danger',
+  resolved: 'bg-raised text-muted',
+  closed: 'bg-raised text-muted',
 }
 
 export const PRIORITY_LABEL: Record<Priority, string> = { urgent: 'Urgent', high: 'High', normal: 'Normal', low: 'Low' }
 
 export const PRIORITY_STYLE: Record<Priority, string> = {
-  urgent: 'bg-[#3A1618] text-danger',
-  high: 'bg-[#3A2A10] text-warn',
-  normal: 'bg-[#16282B] text-soft',
-  low: 'bg-[#16282B] text-muted',
+  urgent: 'bg-danger-soft text-danger',
+  high: 'bg-warn-soft text-warn',
+  normal: 'bg-raised text-soft',
+  low: 'bg-raised text-muted',
 }
 
 export function timeAgo(iso: string) {
@@ -63,7 +63,7 @@ export function slaClock(dueAt: string | null, status: TicketStatus) {
   const mins = (new Date(dueAt).getTime() - Date.now()) / 60000
   if (mins < 0) return { text: `Late by ${formatDuration(-mins)}`, tone: 'text-danger font-semibold', risk: 'breach' as const }
   if (mins <= 240) return { text: `${formatDuration(mins)} left`, tone: 'text-warn font-semibold', risk: 'soon' as const }
-  if (mins <= 24 * 60) return { text: `${formatDuration(mins)} left`, tone: 'text-[#E8D77A]', risk: 'today' as const }
+  if (mins <= 24 * 60) return { text: `${formatDuration(mins)} left`, tone: 'text-[#A16207]', risk: 'today' as const }
   return { text: `${Math.round(mins / 1440)} days left`, tone: 'text-soft', risk: 'later' as const }
 }
 

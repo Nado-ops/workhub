@@ -63,7 +63,7 @@ function Bars({ data, a, b }: { data: { label: string; a: number; b: number }[];
   const max = Math.max(1, ...data.flatMap((d) => [d.a, d.b]))
   return (
     <div>
-      <div className="flex gap-4 text-xs text-soft"><span><span className="text-warn">■</span> {a}</span><span><span className="text-accent">■</span> {b}</span></div>
+      <div className="flex gap-4 text-xs text-soft"><span><span className="text-warn">■</span> {a}</span><span><span className="text-accent-text">■</span> {b}</span></div>
       <div role="img" aria-label={data.map((d) => `${d.label}: ${a} ${d.a}, ${b} ${d.b}`).join('; ')} className="mt-3 flex h-44 items-end gap-3 border-b border-line-2">
         {data.map((d) => (
           <div key={d.label} className="flex h-full flex-1 flex-col items-center justify-end">
@@ -177,7 +177,7 @@ function RemoteReport() {
             return (
               <div key={c.name} className="mt-3">
                 <div className="flex justify-between text-sm"><span>{c.name}</span><span className={c.plan && used > c.plan ? 'text-warn' : 'text-soft'}>{used} h{c.plan ? ` of ${c.plan} h` : ' (no plan)'}</span></div>
-                <div className="mt-1.5 h-1.5 rounded bg-[#1A292C]"><div className={`h-1.5 rounded ${c.plan && used > c.plan ? 'bg-warn' : 'bg-accent'}`} style={{ width: `${pct}%` }} /></div>
+                <div className="mt-1.5 h-1.5 rounded bg-raised"><div className={`h-1.5 rounded ${c.plan && used > c.plan ? 'bg-warn' : 'bg-accent'}`} style={{ width: `${pct}%` }} /></div>
               </div>
             )
           })}
@@ -215,7 +215,7 @@ function ProjectsReport() {
           {active.map((p) => (
             <tr key={p.id}>
               <td className="td px-0">{p.name}</td><td className="td text-soft">{p.client?.name ?? 'Internal'}</td>
-              <td className="td"><div className="h-1.5 w-32 rounded bg-[#1A292C]"><div className="h-1.5 rounded bg-accent" style={{ width: `${p.progress}%` }} /></div></td>
+              <td className="td"><div className="h-1.5 w-32 rounded bg-raised"><div className="h-1.5 rounded bg-accent" style={{ width: `${p.progress}%` }} /></div></td>
               <td className={`td pr-0 text-right ${p.due_date && p.due_date < todayISO() ? 'text-danger' : 'text-soft'}`}>{p.due_date ?? '—'}</td>
             </tr>
           ))}

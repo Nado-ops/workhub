@@ -33,11 +33,11 @@ export default function AdminLayout() {
   const visible = (items: Item[]) => items.filter((i) => i.roles.includes(role))
 
   const link = ({ isActive }: { isActive: boolean }) =>
-    `flex rounded-lg px-2.5 py-2 text-sm no-underline ${isActive ? 'bg-[#16282B] font-semibold text-text' : 'text-soft hover:text-text'}`
+    `flex rounded-lg px-2.5 py-2 text-sm no-underline ${isActive ? 'bg-hover font-semibold text-text shadow-[inset_3px_0_0_var(--color-accent)]' : 'text-soft hover:bg-hover hover:text-text'}`
 
   return (
     <div className="flex min-h-screen flex-wrap items-start gap-4 p-4 md:p-5">
-      <nav aria-label="Main" className="card flex w-full flex-col gap-0.5 p-3 md:sticky md:top-5 md:w-60">
+      <nav aria-label="Main" className="theme-navy card flex w-full flex-col gap-0.5 p-3 md:sticky md:top-5 md:w-60">
         <NavLink to="/app" end className="mb-3 flex items-center gap-2.5 px-2 pt-1 no-underline text-text">
           <img src="/logo-wordmark-light.png" alt="Work Hub" className="h-8 w-auto" />
         </NavLink>

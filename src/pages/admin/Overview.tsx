@@ -45,7 +45,7 @@ export default function Overview() {
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
         {kpis.map((k) => (
-          <Link key={k.label} to={k.to} className={`card p-4 no-underline text-text ${k.risk ? 'border-[#3A2224]' : ''}`}>
+          <Link key={k.label} to={k.to} className={`card p-4 no-underline text-text ${k.risk ? 'border-danger/30' : ''}`}>
             <p className="text-sm text-muted">{k.label}</p>
             <p className={`mt-2 text-3xl font-semibold ${k.risk ? 'text-danger' : ''}`}>{k.value}</p>
           </Link>

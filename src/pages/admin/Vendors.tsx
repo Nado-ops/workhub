@@ -82,13 +82,13 @@ export default function Vendors() {
           <p className="mt-1.5 text-2xl font-semibold">{active.length}</p>
           <p className="mt-1 text-xs text-soft">{active.filter((v) => v.client_id).length} linked to a client</p>
         </div>
-        <div className={`card p-4 ${soon.length ? 'border-[#4A3A18] bg-[#1A1810]' : ''}`}>
+        <div className={`card p-4 ${soon.length ? 'border-warn/30 bg-accent-soft' : ''}`}>
           <p className="text-sm text-muted">Renewing in 30 days</p>
           <p className={`mt-1.5 text-2xl font-semibold ${soon.length ? 'text-warn' : ''}`}>{soon.length}</p>
           <p className="mt-1 text-xs text-soft">{soon.slice(0, 2).map((v) => v.name).join(', ') || 'Nothing coming up'}</p>
         </div>
         {late.length > 0 && (
-          <div className="card border-[#4A2326] bg-[#1F1213] p-4">
+          <div className="card border-danger/30 bg-danger-soft p-4">
             <p className="text-sm text-muted">Renewal date passed</p>
             <p className="mt-1.5 text-2xl font-semibold text-danger">{late.length}</p>
             <p className="mt-1 text-xs text-soft">Update the next renewal date</p>
@@ -110,11 +110,11 @@ export default function Vendors() {
       <section className="card overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-4">
           <label className="flex h-10 flex-[1_1_260px] items-center gap-2 rounded-xl border border-line bg-well px-3">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8FA3A5" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-muted" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
             <input aria-label="Search vendors" className="flex-1 bg-transparent text-sm outline-none" placeholder="Search by name, use, client or account" value={search} onChange={(e) => setSearch(e.target.value)} />
           </label>
           <label className="flex items-center gap-2 text-sm text-soft">
-            <input type="checkbox" className="h-4 w-4 accent-[#D4AF6A]" checked={showCancelled} onChange={(e) => setShowCancelled(e.target.checked)} />
+            <input type="checkbox" className="h-4 w-4 accent-[#B8893A]" checked={showCancelled} onChange={(e) => setShowCancelled(e.target.checked)} />
             Show cancelled
           </label>
         </div>
@@ -137,7 +137,7 @@ export default function Vendors() {
                       <td className="td text-soft">{v.client?.name ?? 'Internal'}</td>
                       <td className="td text-xs text-soft">
                         {v.account_email ?? '—'}
-                        {v.website && <a href={v.website} target="_blank" rel="noreferrer" className="block text-accent no-underline">Open website ↗</a>}
+                        {v.website && <a href={v.website} target="_blank" rel="noreferrer" className="block text-accent-text no-underline">Open website ↗</a>}
                       </td>
                       <td className="td">
                         <p className="font-semibold">{v.billing_cycle === 'free' ? 'Free' : money(v.cost, v.currency)}</p>
