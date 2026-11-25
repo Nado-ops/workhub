@@ -34,6 +34,11 @@ keep code readable, and add short comments where something isn't obvious.
 | Study reminders | own only | own only | none |
 | Team & roles | yes | no | no |
 
+Custom roles (migration 013): a staff member can have one `roles` row (`profiles.role_id`) that ADDS powers:
+`finance` (Finance, Vendors, money reports, claims), `hr` (everyone's leave/time/HR docs), `websites` (manage sites,
+uploads, auto-mark), `announcements`. Database: `public.can('finance')` (true for admins) in extra OR'ed policies.
+App: `canDo(profile, perm)` / `useCan()` from AuthProvider, `RequireRole perm=…`, menu `perm`. Worker: `db.can()`.
+
 ## Layout
 - `src/layouts/AdminLayout.tsx` — admin/staff menu (role-filtered)
 - `src/layouts/ClientLayout.tsx` — client portal header
@@ -76,5 +81,8 @@ keep code readable, and add short comments where something isn't obvious.
   publishing stops (someone uploaded in the dashboard). Browser upload = `src/lib/siteUpload.ts` (zip via fflate);
   re-uploads merge (scan mode 'merge') and re-run auto-mark on pages that had fields. `cfHash` exists in both
   `worker/pages.ts` and `src/lib/siteUpload.ts` — keep them identical.
+- People (Team & settings): invite / block / send login link go through the Worker (`worker/users.ts`, `/api/users/*`)
+  using the Cloudflare secret `SUPABASE_SERVICE_ROLE_KEY` — only after checking the caller is an admin with their own
+  JWT. The browser never gets that key. "Remove access" = ban (history kept), not delete.
 - Not built yet: study reminder emails, direct WordPress publishing (WordPress sites use requests).
 - Shared helpers: `src/lib/team.ts` (`useTeam`), `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts` (`useBusiness`), `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.

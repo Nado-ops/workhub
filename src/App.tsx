@@ -72,9 +72,9 @@ export default function App() {
             <Route path="pipeline" element={<Pipeline />} />
             <Route path="reports" element={<Reports />} />
             <Route path="hr" element={<HR />} />
-            <Route path="finance" element={<RequireRole roles={['admin']}><Finance /></RequireRole>} />
+            <Route path="finance" element={<RequireRole roles={['admin', 'staff']} perm="finance"><Finance /></RequireRole>} />
             <Route path="study" element={<RequireRole roles={['admin']}><Study /></RequireRole>} />
-            <Route path="vendors" element={<RequireRole roles={['admin']}><Vendors /></RequireRole>} />
+            <Route path="vendors" element={<RequireRole roles={['admin', 'staff']} perm="finance"><Vendors /></RequireRole>} />
             <Route path="team" element={<RequireRole roles={['admin']}><Team /></RequireRole>} />
           </Route>
 

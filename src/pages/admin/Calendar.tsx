@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../auth/AuthProvider'
+import { useAuth, useCan } from '../../auth/AuthProvider'
 import { dateKey, saHolidays } from '../../lib/holidays'
 
 // Everything that can show on the calendar, and its colour (calm, soft tones).
@@ -30,7 +30,8 @@ const time = (iso: string) => new Date(iso).toLocaleTimeString('en-ZA', { hour: 
 /** One calendar for the whole team: meetings, leave, deadlines, follow-ups and holidays. */
 export default function Calendar() {
   const { profile } = useAuth()
-  const isAdmin = profile?.role === 'admin'
+  const can = useCan()
+  const isAdmin = can('finance') // invoices and vendor renewals are finance information
   const [cursor, setCursor] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1) })
   const [items, setItems] = useState<Item[]>([])
   const [hidden, setHidden] = useState<Set<Kind>>(new Set())

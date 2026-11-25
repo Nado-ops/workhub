@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { supabase } from '../../lib/supabase'
-import { useAuth } from '../../auth/AuthProvider'
+import { useCan } from '../../auth/AuthProvider'
 import { personName } from '../../lib/team'
 import { timeAgo } from '../../lib/format'
 
@@ -15,8 +15,8 @@ interface Announcement {
 
 /** Team news. Admins post; everyone on the team gets a notification. */
 export default function Announcements() {
-  const { profile } = useAuth()
-  const isAdmin = profile?.role === 'admin'
+  const can = useCan()
+  const isAdmin = can('announcements') // admins, and staff whose role includes announcements
   const [items, setItems] = useState<Announcement[]>([])
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')

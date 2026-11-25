@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
-import type { Profile } from '../lib/types'
+import type { Permission, Profile } from '../lib/types'
 
 interface AuthState {
   session: Session | null
@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const { data } = await supabase
       .from('profiles')
-      .select('id, email, full_name, job_title, role, client_id')
+      .select('id, email, full_name, job_title, role, client_id, role_id, custom_role:roles(name, permissions)')
       .eq('id', userId)
       .single()
     setProfile((data as Profile | null) ?? null)
@@ -72,3 +72,13 @@ export function useAuth() {
 }
 
 export const isTeam = (p: Profile | null) => p?.role === 'admin' || p?.role === 'staff'
+
+/** Can this person do X? Admins can do everything; staff only what their custom role allows. */
+export const canDo = (p: Profile | null, permission: Permission) =>
+  p?.role === 'admin' || (p?.role === 'staff' && !!p.custom_role?.permissions.includes(permission))
+
+/** const can = useCan(); if (can('finance')) … */
+export function useCan() {
+  const { profile } = useAuth()
+  return (permission: Permission) => canDo(profile, permission)
+}

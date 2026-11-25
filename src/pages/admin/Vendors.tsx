@@ -30,7 +30,7 @@ const money = (n: number, cur: string) => (cur === 'ZAR' ? 'R' : cur + ' ') + am
 const perMonth = (v: Vendor) => (v.billing_cycle === 'monthly' ? Number(v.cost) : v.billing_cycle === 'yearly' ? Number(v.cost) / 12 : 0)
 const daysUntil = (iso: string) => Math.round((new Date(iso + 'T12:00').getTime() - new Date(todayISO() + 'T12:00').getTime()) / 86400000)
 
-/** Vendors (admin only): every service and supplier you pay for, with renewal reminders. */
+/** Vendors (admins + the "finance" power): every service and supplier you pay for, with renewal reminders. */
 export default function Vendors() {
   const [rows, setRows] = useState<Vendor[]>([])
   const [clients, setClients] = useState<Pick<Client, 'id' | 'name'>[]>([])
