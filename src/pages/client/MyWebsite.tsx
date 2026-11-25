@@ -60,7 +60,7 @@ export default function MyWebsite() {
     } else {
       try {
         await cmsApi('publish', { change_ids: [(data as { id: string }).id] })
-        setMsg({ ok: true, text: 'Saved! Your website updates in a minute or two.' })
+        setMsg({ ok: true, text: 'Saved. Your website shows the change in a minute or two.' })
       } catch (e) {
         setMsg({ ok: false, text: `Couldn’t publish: ${e instanceof Error ? e.message : ''} The team has been told.` })
       }

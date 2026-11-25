@@ -88,7 +88,7 @@ export default function MyTickets() {
             </div>
           </fieldset>
           <label className="label">Tell us more
-            <textarea className="input h-28 py-2" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What happened, on which page, and what you expected to see." />
+            <textarea className="input h-28 py-2" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="The page, what happened, and what you expected." />
           </label>
           <label className="btn h-10 w-fit cursor-pointer border border-dashed border-line-2 font-normal text-soft">
             + Attach screenshots or PDFs

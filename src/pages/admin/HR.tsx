@@ -401,7 +401,7 @@ function MyClaims() {
         </div>
         <label className="label">Was it for a client?
           <select className="input" value={clientId} onChange={(e) => setClientId(e.target.value)}>
-            <option value="">No — internal</option>
+            <option value="">No, internal</option>
             {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </label>
@@ -497,7 +497,7 @@ function DocsTab({ admin }: { admin: boolean }) {
             <input type="file" accept={ACCEPT} className="sr-only" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
           </label>
           <button className="btn-primary h-11">Add</button>
-          <p className="basis-full text-xs text-muted">Personal files can only be opened by that person and admins. "Everyone" files can be opened by all staff.</p>
+          <p className="basis-full text-xs text-muted">Only that person and admins can open personal files. All staff can open "Everyone" files.</p>
         </form>
       )}
       {error && <p className="text-sm text-danger">{error}</p>}

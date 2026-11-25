@@ -69,7 +69,7 @@ export default function Team() {
     <div className="flex flex-col gap-4">
       <div className="pt-2">
         <h1 className="text-2xl font-semibold">Team &amp; settings</h1>
-        <p className="mt-1 text-sm text-muted">Who can log in, and what they're allowed to see.</p>
+        <p className="mt-1 text-sm text-muted">Logins, roles and business settings.</p>
       </div>
 
       {ready === false && (

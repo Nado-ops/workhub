@@ -48,8 +48,8 @@ export default function SiteFiles({ site, isAdmin, connected, onDone }: { site: 
     <div className="flex flex-col gap-4">
       {sync && !sync.in_sync && (
         <div className="rounded-xl border border-warn/30 bg-warn-soft p-4 text-sm" role="alert">
-          <p className="font-semibold text-warn">This website was updated in the Cloudflare dashboard</p>
-          <p className="mt-1 text-soft">Work Hub’s copy is older than what’s live, so publishing is paused to avoid undoing that update. Upload the same files here, then client edits can go live again.</p>
+          <p className="font-semibold text-warn">Someone updated this website in the Cloudflare dashboard</p>
+          <p className="mt-1 text-soft">Work Hub’s copy is older than the live site, so Work Hub has paused publishing to avoid undoing that update. Upload the same files here, then client edits can go live again.</p>
         </div>
       )}
       {!site.cf_deployment_id && (
@@ -105,7 +105,7 @@ export default function SiteFiles({ site, isAdmin, connected, onDone }: { site: 
       {isAdmin && (
         <p className="text-xs text-muted">
           Choose the folder that has <code>index.html</code> in it (or a .zip of it). Uploading here replaces Work Hub’s copy and publishes it.
-          Client edits stay on parts you didn’t change, and editable markers are added back automatically.
+          Client edits stay on parts you didn’t change, and Work Hub adds the editable markers back for you.
           Photos clients added through Work Hub are kept.
         </p>
       )}

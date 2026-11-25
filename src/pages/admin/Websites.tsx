@@ -50,7 +50,7 @@ export default function Websites() {
       <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
           <h1 className="text-2xl font-semibold">Websites</h1>
-          <p className="mt-1 text-sm text-muted">Client websites they can update from their portal. Changes go live through GitHub or straight to Cloudflare Pages.</p>
+          <p className="mt-1 text-sm text-muted">Websites your clients update from their portal. Changes go live through GitHub or Cloudflare Pages.</p>
         </div>
         {isAdmin && <button className="btn-primary" onClick={() => setSelected('new')}>+ Connect a website</button>}
       </div>
@@ -138,7 +138,7 @@ function SitePanel({ site, isAdmin, connected, onChange }: { site: Site; isAdmin
             ].filter(Boolean).map((part, i) => <span key={i}>{i > 0 && ' · '}{part}</span>)}
           </p>
           <p className="text-xs text-muted">
-            {site.requires_approval ? 'Client edits wait for approval' : 'Client edits go live straight away'}
+            {site.requires_approval ? 'Client edits wait for approval' : 'Client edits go live when the client saves'}
             {site.last_scanned_at ? ` · scanned ${timeAgo(site.last_scanned_at)}` : ''}
           </p>
         </div>
@@ -184,7 +184,7 @@ function Inbox({ site, labels, changes, busy, canPublish, onPublish, onChange }:
     onChange()
   }
 
-  if (changes.length === 0) return <p className="text-sm text-muted">All caught up — nothing waiting.</p>
+  if (changes.length === 0) return <p className="text-sm text-muted">Nothing waiting for you.</p>
   return (
     <div className="flex flex-col gap-5">
       {edits.length > 0 && (
@@ -272,7 +272,7 @@ function Pages({ site, fields, isAdmin, busy, connected, onRun, onPublish, onRel
     onPublish([(data as { id: string }).id])
   }
   async function rename(f: SiteField) {
-    const label = window.prompt('What should the client see this called?', f.label ?? '')
+    const label = window.prompt('Name the client sees for this part:', f.label ?? '')
     if (!label) return
     await supabase.from('site_fields').update({ label: label.trim() }).eq('id', f.id)
     onReload()
@@ -386,7 +386,7 @@ function SiteForm({ site, onDone }: { site: Site | null; onDone: (id: string) =>
       <label className="label flex-[1_1_200px]">Built with
         <select className="input" value={f.kind} onChange={(e) => set('kind', e.target.value)}>
           <option value="github">HTML on GitHub (Cloudflare Pages or Workers)</option>
-          <option value="cloudflare">Cloudflare Pages, uploaded directly (no GitHub)</option>
+          <option value="cloudflare">Cloudflare Pages, uploaded by hand (no GitHub)</option>
           <option value="wordpress">WordPress (requests for now)</option>
           <option value="other">Something else (requests only)</option>
         </select>

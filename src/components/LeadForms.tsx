@@ -37,7 +37,7 @@ export default function LeadForms({ onClose }: { onClose: () => void }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold">Website forms</h2>
-          <p className="text-sm text-muted">Contact forms on these websites send enquiries straight into the pipeline as new leads.</p>
+          <p className="text-sm text-muted">Enquiries from these websites’ contact forms arrive in the pipeline as new leads.</p>
         </div>
         <div className="flex gap-2">
           <button className="btn-primary h-9" onClick={() => setEditing('new')}>+ Add a website</button>
@@ -107,7 +107,7 @@ function SourceForm({ source, team, onDone }: { source: LeadSource | null; team:
       </label>
       <button className="btn-primary">{source ? 'Save' : 'Add website'}</button>
       <button type="button" className="btn-ghost" onClick={() => onDone(null)}>Cancel</button>
-      <p className="basis-full text-xs text-muted">Subdomains are included (www.…, shop.…). Separate several addresses with commas.</p>
+      <p className="basis-full text-xs text-muted">This covers subdomains too (www.…, shop.…). Separate several addresses with commas.</p>
       {error && <p className="basis-full text-sm text-danger">{error}</p>}
     </form>
   )

@@ -174,7 +174,7 @@ function Conversation({ ticket, messages, onSent }: { ticket: Ticket; messages: 
         />
         {error && <p className="mt-2 text-sm text-danger">{error}</p>}
         <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs text-muted">{note ? 'Internal notes are never shown to the client.' : 'The client sees this in their portal.'}</span>
+          <span className="text-xs text-muted">{note ? 'Clients never see internal notes.' : 'The client sees this in their portal.'}</span>
           <button className="btn-primary" disabled={busy || !draft.trim()} onClick={send}>{note ? 'Add note' : 'Send reply'}</button>
         </div>
       </div>

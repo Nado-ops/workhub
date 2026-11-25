@@ -6,10 +6,10 @@ import { useAuth } from '../auth/AuthProvider'
 // Short, original lines that rotate on the left. Add your own here.
 const LINES = [
   { text: 'Small steps every day add up to big things.', tag: 'Keep going' },
-  { text: 'Every ticket closed is someone’s day made easier.', tag: 'Support' },
+  { text: 'Close a ticket and you make someone’s day easier.', tag: 'Support' },
   { text: 'Do the work you’d be proud to show a client.', tag: 'Quality' },
   { text: 'Learn one new thing today. Use it tomorrow.', tag: 'Growth' },
-  { text: 'Clear plans, calm days, happy clients.', tag: 'Focus' },
+  { text: 'Clear plans make for calm days.', tag: 'Focus' },
   { text: 'Progress beats perfect. Ship it, then make it better.', tag: 'Momentum' },
 ]
 
@@ -49,7 +49,7 @@ export default function Login() {
       redirectTo: `${window.location.origin}/reset-password`,
     })
     if (error) setError(error.message)
-    else setNotice('If that email has an account, a reset link is on its way.')
+    else setNotice('If that email has an account, we’ve sent it a reset link.')
   }
 
   const hour = new Date().getHours()
@@ -79,7 +79,7 @@ export default function Login() {
         />
 
         <div className="relative">
-          <img src="/logo-light.png" alt="Work Hub — Small steps. Real progress." className="h-14 w-auto md:h-16" />
+          <img src="/logo-light.png" alt="Work Hub: Small steps. Real progress." className="h-14 w-auto md:h-16" />
         </div>
 
         <div className="relative max-w-[440px] py-8 md:py-0">
@@ -95,7 +95,7 @@ export default function Login() {
           </div>
         </div>
 
-        <p className="relative hidden text-xs text-[#C9D6D7] md:block">Tickets · Projects · Clients · Finance · HR — all in one place.</p>
+        <p className="relative hidden text-xs text-[#C9D6D7] md:block">Tickets, projects, clients, finance and HR in one place.</p>
       </section>
 
       {/* Right: sign-in form */}

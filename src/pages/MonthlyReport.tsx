@@ -149,7 +149,7 @@ export default function MonthlyReport() {
                   <p className="text-soft">{p.status === 'done' ? 'Finished' : `${PHASE_LABEL[p.phase]} · ${p.progress}%`}{p.due_date ? ` · due ${shortDate(p.due_date)}` : ''}</p>
                 </div>
                 <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-raised"><div className="h-full rounded-full bg-accent" style={{ width: `${p.progress}%` }} /></div>
-                {p.waiting_on_client && <p className="mt-1 text-xs text-warn">Waiting on you for something — check your portal.</p>}
+                {p.waiting_on_client && <p className="mt-1 text-xs text-warn">We’re waiting on something from you. Check your portal.</p>}
               </div>
             ))}
           </Section>

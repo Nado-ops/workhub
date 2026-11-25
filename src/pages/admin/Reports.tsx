@@ -31,7 +31,7 @@ export default function Reports() {
       <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
           <h1 className="text-2xl font-semibold">Reports</h1>
-          <p className="mt-1 text-sm text-muted">How things are going this month, worked out from your live data.</p>
+          <p className="mt-1 text-sm text-muted">This month’s numbers, from your live data.</p>
         </div>
         <Link to="/app/report" className="btn-ghost no-underline">Client monthly reports →</Link>
       </div>
@@ -270,7 +270,7 @@ function MoneyReport() {
         <div className="min-w-0 flex-[1.2_1_380px]"><h3 className="mb-2 font-semibold">Invoiced vs paid (R thousand)</h3><Bars data={months} a="Invoiced" b="Paid" /></div>
         <div className="min-w-0 flex-[1_1_280px]">
           <h3 className="mb-2 font-semibold">Owed by client</h3>
-          {owed.size === 0 && <p className="text-sm text-muted">Nobody owes you anything.</p>}
+          {owed.size === 0 && <p className="text-sm text-muted">All invoices are paid.</p>}
           {[...owed.entries()].map(([n, o]) => (
             <div key={n} className="flex justify-between border-t border-line py-2 text-sm"><span>{n}</span><span className={o.overdue ? 'text-danger' : 'text-soft'}>{rand(o.owed)}{o.overdue ? ' · overdue' : ''}</span></div>
           ))}

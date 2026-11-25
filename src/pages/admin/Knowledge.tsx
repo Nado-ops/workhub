@@ -48,7 +48,7 @@ export default function Knowledge() {
       <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
           <h1 className="text-2xl font-semibold">Knowledge base</h1>
-          <p className="mt-1 text-sm text-muted">How we do things here. Write it once, so nobody has to ask twice.</p>
+          <p className="mt-1 text-sm text-muted">Your team’s how-to guides. Write the answer once and point people here.</p>
         </div>
         <button className="btn-primary" onClick={() => { setPick('new'); setEditing(true) }}>+ New article</button>
       </div>
@@ -144,7 +144,7 @@ function ArticleForm({ article, categories, canDelete, onDone }: { article: Arti
         <textarea className="input h-80 py-3 leading-6" value={body} onChange={(e) => setBody(e.target.value)} placeholder={'1. Log in to …\n2. Click …\n3. …'} />
       </label>
       <label className="flex items-center gap-2 text-sm text-soft"><input type="checkbox" className="h-4 w-4 accent-[#B8893A]" checked={pinned} onChange={(e) => setPinned(e.target.checked)} /> Pin to the top</label>
-      <p className="basis-full text-xs text-muted">Never put passwords here — say where they're kept instead.</p>
+      <p className="basis-full text-xs text-muted">Never put passwords here. Write where to find them instead.</p>
       <button className="btn-primary">{article ? 'Save' : 'Publish'}</button>
       <button type="button" className="btn-ghost" onClick={() => onDone(article?.id ?? null)}>Cancel</button>
       {canDelete && <button type="button" className="btn-ghost text-danger" onClick={remove}>Delete</button>}

@@ -89,7 +89,7 @@ export async function handleLeads(request: Request, env: LeadsEnv): Promise<Resp
   })
   if (!res.ok) {
     const m = res.message ?? ''
-    if (m.includes('too_many')) return done(429, 'We’re receiving a lot of messages right now. Please try again in a few minutes.')
+    if (m.includes('too_many')) return done(429, 'We’ve had a lot of messages in the last few minutes. Please try again in 10 minutes.')
     if (m.includes('missing_details')) return done(400, 'Please add your name and an email address or phone number.')
     if (m.includes('wrong_website') || m.includes('unknown_form')) return done(403, 'This form isn’t connected to Work Hub.')
     return done(500, 'Something went wrong sending your message. Please try again, or email us directly.')
