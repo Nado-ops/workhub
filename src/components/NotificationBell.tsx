@@ -6,7 +6,7 @@ import { timeAgo } from '../lib/format'
 
 interface Note { id: string; kind: string; title: string; body: string | null; link: string | null; read_at: string | null; created_at: string }
 
-const ICON: Record<string, string> = { event: '📅', task: '✅', ticket: '🎫', message: '💬', announcement: '📣', leave: '🌴', claim: '🧾' }
+const ICON: Record<string, string> = { website: '🌐', event: '📅', task: '✅', ticket: '🎫', message: '💬', announcement: '📣', leave: '🌴', claim: '🧾' }
 
 /** The bell in the menu. Notifications are made by the database (migration 008); this shows yours. */
 export default function NotificationBell() {

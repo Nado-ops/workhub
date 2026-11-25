@@ -2,13 +2,21 @@
 // `npm run build` puts the app in ./dist, and Cloudflare serves it from there.
 // "single-page-application" sends every address (like /app/tickets) to index.html,
 // so refreshing any page works.
+// worker/index.ts handles only /api/* (the website CMS); everything else is the app.
+//
+// Secrets (set in Cloudflare → Workers → workhub → Settings → Variables and secrets, type "Secret"):
+//   SUPABASE_URL, SUPABASE_ANON_KEY  — same values as the VITE_ ones
+//   GITHUB_TOKEN                     — GitHub token with Contents: Read and write on client website repos
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "workhub",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-23",
   "observability": { "enabled": true },
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
   }
 }

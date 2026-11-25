@@ -6,7 +6,8 @@ keep code readable, and add short comments where something isn't obvious.
 ## Stack
 - Vite + React 19 + TypeScript (strict), react-router v7, Tailwind v4 (`src/index.css`)
 - Supabase (database + auth) via `src/lib/supabase.ts` — browser uses the anon key only
-- Cloudflare Workers hosting with static assets (`wrangler.jsonc`, `npm run build` → `dist`). No `_redirects` file.
+- Cloudflare Workers hosting with static assets (`wrangler.jsonc`, `npm run build` → `dist`) plus a small Worker
+  (`worker/index.ts`) for `/api/*`. No `_redirects` file. `npm run build` also type-checks `worker/`.
 
 ## Rules
 - Work on the `dev` branch. `main` is live.
@@ -61,5 +62,12 @@ keep code readable, and add short comments where something isn't obvious.
 - Calendar (`/app/calendar`) merges events, approved leave, task/project/invoice/renewal dates, CRM follow-ups,
   own study reminders and SA public holidays (`src/lib/holidays.ts`). Activity log (`/app/activity`, admin) has
   the JSON backup download.
-- Not built yet: study reminder emails.
+- Website CMS (migration 010): `sites` (client website; kind github/wordpress/other; admin manages), `site_fields`
+  (editable parts found by scanning `data-cms` markers), `site_changes` (edit = new value for a field; request = words +
+  photos), private bucket `site-images`. Publishing happens ONLY in the Cloudflare Worker (`worker/`): it calls Supabase
+  with the user's own JWT (RLS applies), checks permission before touching GitHub, commits pages + photos in one
+  commit, then calls `cms_mark_published()`. GitHub token = Cloudflare secret `GITHUB_TOKEN`. Rich text is sanitised
+  on publish (`worker/html.ts`) and before display (`src/lib/richtext.ts`) — never render site HTML without it.
+  Pages: admin `/app/websites`, client `/portal/website`. `wrangler.jsonc` runs the worker first only for `/api/*`.
+- Not built yet: study reminder emails, direct WordPress publishing (WordPress sites use requests).
 - Shared helpers: `src/lib/team.ts` (`useTeam`), `src/components/Tabs.tsx`, `src/components/PhaseSteps.tsx`, `src/lib/finance.ts`, `src/lib/business.ts` (`useBusiness`), `src/lib/files.ts`, `src/components/TicketFiles.tsx`, `src/components/EmailSettings.tsx`.

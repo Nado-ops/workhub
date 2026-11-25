@@ -23,6 +23,8 @@ import Tasks from './pages/admin/Tasks'
 import Knowledge from './pages/admin/Knowledge'
 import Announcements from './pages/admin/Announcements'
 import Calendar from './pages/admin/Calendar'
+import Websites from './pages/admin/Websites'
+import MyWebsite from './pages/client/MyWebsite'
 import ActivityLog from './pages/admin/ActivityLog'
 import PrintDocument from './pages/PrintDocument'
 import MonthlyReport from './pages/MonthlyReport'
@@ -61,6 +63,7 @@ export default function App() {
             <Route path="knowledge" element={<Knowledge />} />
             <Route path="announcements" element={<Announcements />} />
             <Route path="calendar" element={<Calendar />} />
+            <Route path="websites" element={<Websites />} />
             <Route path="activity" element={<RequireRole roles={['admin']}><ActivityLog /></RequireRole>} />
             <Route path="tickets" element={<Tickets />} />
             <Route path="tickets/:id" element={<TicketDetail />} />
@@ -82,6 +85,7 @@ export default function App() {
             <Route path="tickets/:id" element={<ClientTicket />} />
             <Route path="projects" element={<ClientProjects />} />
             <Route path="invoices" element={<ClientInvoices />} />
+            <Route path="website" element={<MyWebsite />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

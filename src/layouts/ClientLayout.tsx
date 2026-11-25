@@ -7,6 +7,7 @@ const LINKS = [
   { to: '/portal', label: 'Dashboard', end: true },
   { to: '/portal/tickets', label: 'My tickets' },
   { to: '/portal/projects', label: 'My projects' },
+  { to: '/portal/website', label: 'My website' },
   { to: '/portal/invoices', label: 'Quotes & invoices' },
   { to: '/portal/report', label: 'Monthly report' },
 ]
