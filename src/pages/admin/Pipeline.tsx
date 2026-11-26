@@ -317,11 +317,11 @@ function ActivityTab({ dealId }: { dealId: string }) {
             </button>
           ))}
         </div>
-        <input className="input flex-[1_1_260px]" aria-label="What happened" value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Spoke to Sam — wants the booking calendar too" />
+        <input className="input flex-[1_1_260px]" aria-label="What happened" value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Spoke to Sam. He wants the booking calendar too." />
         <button className="btn-primary h-11">Log it</button>
       </form>
       {error && <p className="text-sm text-danger">{error}</p>}
-      {items.length === 0 && <p className="text-sm text-muted">Nothing logged yet. Log each call, email or meeting so the whole team can see where things stand.</p>}
+      {items.length === 0 && <p className="text-sm text-muted">Nothing logged yet. Log each call, email or meeting so the team knows where things stand.</p>}
       <ol className="flex flex-col">
         {items.map((a) => (
           <li key={a.id} className="flex gap-3 border-t border-line py-3 first:border-t-0">

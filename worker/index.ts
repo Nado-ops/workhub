@@ -278,12 +278,12 @@ async function publish(db: Db, env: Env, ids: string[]) {
 
   // Check permission BEFORE touching GitHub/Cloudflare (the database checks again when we record it).
   if (!db.isStaff) {
-    if (site.requires_approval) throw new HttpError(403, 'Your changes are sent to the team for approval first.')
+    if (site.requires_approval) throw new HttpError(403, 'The team approves your changes before they go live.')
     if (changes.some((c) => c.created_by !== db.me.id)) throw new HttpError(403, 'You can only publish your own changes.')
   }
   for (const c of changes) {
-    if (c.kind !== 'edit') throw new HttpError(400, 'Change requests are done by the team, not published automatically.')
-    if (!['submitted', 'approved', 'failed'].includes(c.status)) throw new HttpError(400, 'One of these changes was already handled.')
+    if (c.kind !== 'edit') throw new HttpError(400, 'The team carries out change requests by hand.')
+    if (!['submitted', 'approved', 'failed'].includes(c.status)) throw new HttpError(400, 'Someone already handled one of these changes.')
     if (!c.page || !c.field_key || !c.field_type || c.new_value === null || !KEY_PATTERN.test(c.field_key)) throw new HttpError(400, 'A change is missing its details.')
   }
 
@@ -359,7 +359,7 @@ async function cfDeploy(db: Db, env: Env, site: Site, opts: {
     if (!site.cf_deployment_id) throw new HttpError(409, 'Upload this website’s files in Work Hub first (Websites → Files).')
     const latest = await cf.latestDeployment()
     if (latest && latest !== site.cf_deployment_id) {
-      throw new HttpError(409, 'This website was updated in the Cloudflare dashboard after Work Hub’s last upload. Upload the new files in Work Hub (Websites → Files) so nothing gets undone, then publish again.')
+      throw new HttpError(409, 'Someone uploaded a new version in the Cloudflare dashboard after Work Hub’s last upload. Upload the same files in Work Hub (Websites → Files) so you don’t undo their changes, then publish again.')
     }
   }
 

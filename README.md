@@ -53,6 +53,7 @@ In Supabase → **SQL Editor**, run each file in `supabase/migrations/` **in ord
 12. `012_clear_logs.sql` — admins can clear the activity log, email log and notifications (Activity log → Clear logs)
 13. `013_custom_roles.sql` — custom roles for staff (Finance, Manager, Web team…) with real database permissions
 14. `014_website_leads.sql` — website contact forms send leads into the CRM pipeline
+15. `015_plainer_email_wording.sql` — plainer wording in ticket and quote/invoice emails
 
 Then make yourself admin:
 

@@ -38,7 +38,7 @@ export default function ClientInvoices() {
   async function respond(q: Doc, accept: boolean) {
     const { error } = await supabase.rpc('respond_to_quote', { quote_id: q.id, accept })
     if (error) { setError(error.message); return }
-    setThanks(accept ? `Thank you! ${q.number} is accepted — we'll send the invoice and get started.` : `${q.number} declined. We'll be in touch.`)
+    setThanks(accept ? `Thank you! ${q.number} is accepted. We'll send the invoice and get started.` : `${q.number} declined. We'll be in touch.`)
     load()
   }
 
@@ -85,7 +85,7 @@ export default function ClientInvoices() {
     <div className="flex flex-col gap-4">
       <div className="pt-2">
         <h1 className="text-2xl font-semibold">Quotes &amp; invoices</h1>
-        <p className="mt-1 text-sm text-muted">Everything we send you lands here. Tap one to see the details.</p>
+        <p className="mt-1 text-sm text-muted">Your quotes and invoices from us. Tap one to see the details.</p>
       </div>
       {error && <p className="text-sm text-danger">{error}</p>}
       {thanks && <p role="status" className="card border-success/30 bg-success-soft p-4 text-sm text-accent-text">{thanks}</p>}

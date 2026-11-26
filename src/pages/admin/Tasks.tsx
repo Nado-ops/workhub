@@ -58,7 +58,7 @@ export default function Tasks() {
       <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
           <h1 className="text-2xl font-semibold">Tasks</h1>
-          <p className="mt-1 text-sm text-muted">Internal work for the team — anything that isn't a client ticket.</p>
+          <p className="mt-1 text-sm text-muted">Work the team gives each other, outside client tickets.</p>
         </div>
         <button className="btn-primary" onClick={() => setEditing(editing === 'new' ? null : 'new')}>{editing === 'new' ? 'Close' : '+ New task'}</button>
       </div>

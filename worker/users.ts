@@ -25,7 +25,7 @@ export class UserAdmin {
     if (!res.ok) {
       const why = out.msg || out.message || out.error_description || `status ${res.status}`
       if (/already been registered|already exists/i.test(why)) throw new Error('Someone with that email already has a login. Find them in the list below.')
-      if (/rate limit/i.test(why)) throw new Error('Supabase is limiting how many emails can be sent right now. Wait a while, or set up your own email sender in Supabase (README → Team).')
+      if (/rate limit/i.test(why)) throw new Error('Supabase has hit its email limit for now. Wait an hour, or set up your own email sender in Supabase (README → Team).')
       throw new Error(`Supabase: ${why}`)
     }
     return out
@@ -61,6 +61,6 @@ export class UserAdmin {
       headers: { apikey: this.env.SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     })
-    if (!res.ok) throw new Error(res.status === 429 ? 'Too many emails just now. Try again in a while.' : `Couldn’t send the link (${res.status}).`)
+    if (!res.ok) throw new Error(res.status === 429 ? 'Supabase has hit its email limit. Try again in an hour.' : `Couldn’t send the link (${res.status}).`)
   }
 }

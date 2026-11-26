@@ -59,7 +59,7 @@ export default function ActivityLog() {
       <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
         <div>
           <h1 className="text-2xl font-semibold">Activity log</h1>
-          <p className="mt-1 text-sm text-muted">Who added, changed or deleted what. Only admins see this. Kept for a year.</p>
+          <p className="mt-1 text-sm text-muted">A record of each add, change and delete, kept for a year. Only admins see it.</p>
         </div>
         <div className="flex flex-wrap items-start gap-2">
           <button className="btn-ghost" onClick={() => setClearing((v) => !v)}>Clear logs…</button>
